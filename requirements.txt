@@ -1,0 +1,25 @@
+
+# run this line separately to install pytorch
+# gpu version
+#pip3 install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+#
+# cpu version
+# pip install torch==1.8.0+cpu torchvision==0.9.0+cpu torchaudio==0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
+######
+
+# torch==1.4.0
+transformers==4.6.1 #old 2.9.0
+pytorch_lightning==1.3.4 #0.7.5 #1.3.2 
+GitPython==3.1.0
+# easse@git+git://github.com/feralvam/easse.git@090855e73dee5e26ea0cda01d4aa4f51044d9af9
+# easse@git+git://github.com/feralvam/easse.git@a0ccf7b064435b47bef14d88a44d392a247bf0d0
+
+easse@git+git://github.com/feralvam/easse.git@8f62a807cce1c73771ad2c6c28a1c72e927d581a
+
+#sacrebleu==1.4.3
+
+python_Levenshtein==0.12.0
+spacy==2.1.3
+sentencepiece==0.1.95
+# wandb==0.10.30
+optuna

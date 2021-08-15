@@ -1,0 +1,404 @@
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+ </head>
+
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+
+<style>
+
+#consent-form-container{
+	background: #fff;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	position:absolute;
+	height:100%;
+	width:100%;
+    z-index:999;
+}
+.rating td{padding-top:25px;}
+
+.rating crowd-slider{width: 100%;}
+.rating .col_sent{width: 70%; }
+.rating .col_rating_slider{width: 10%; }
+.col_sent_header{text-align: left;}
+.col_rating_header{text-align: center;}
+
+.simp_sent_id {display: none;}
+.orig_sent_id {display: none;}
+.red {color: rgb(255, 0, 0);}
+
+</style>
+
+<script>
+ function consentFormSubmitted(){
+ 	document.getElementById("consent-form-container").style.display = "none";
+	document.getElementById("task-container").style.display = "block";
+ }
+
+ document.getElementById("consent-form-container").style.display = "none";
+ document.getElementById("task-container").style.display = "block";
+</script>
+
+<div class="consent-form container" id="consent-form-container">
+	<h2>Rate the quality of simplified sentences in English</h2>
+    <br>
+	<h4>Information Sheet</h4>
+
+	<p>Before you decide to participate, it is important that you understand the purpose of the research
+		you will be participating in and what will happen to the data collected from you.</p>
+	<p>The study aims to collect ratings for <strong>simplifications</strong> of sentences that originally could have been considered difficult
+        to understand by non-native speakers of English.
+        The collected data will be used for research purpose only.</p>
+	<p>
+		You will be reading sentences extracted from Wikipedia articles.
+		The nature of the sentences and their language are such that they are unlikely to cause offence, disturbance or distress to readers from a general audience.
+		However, if you feel uncomfortable with the content of any of the sentences, please let us know in the Suggestions box provided.
+	</p>
+	<p>
+		It is important to emphasize that the data collected will be made available for other researchers.
+		In addition, the results of this investigation may be published in scientific journals or conferences and may be used in further studies.
+    </p>
+    
+	<p>Thank you,</p>
+
+    <h4>Consent Form</h4>
+
+	<p>In order to participate in this experiment, you must:</p>
+	<ul>
+        <li >Be <strong class="red">English native speaker</strong></li>
+		<li>Be at least 18 years old and competent to provide consent</li>
+		<li>Have read and understood the Information Sheet explaining the research project</li>
+		<li>Agree for the data collected to be used in anonymised way in the future</li>
+		<li>Agree to take part in the research previously described</li>
+	</ul>
+	<button id="consent-submit-button" type="button" class="btn btn-primary" onclick="consentFormSubmitted()">
+	I accept to participate in this research
+	</button>
+</div>
+
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<div style="padding:15px; margin-bottom: 30px;"> 
+<crowd-form answer-format="flatten-objects" id="task-container" style="display:none">
+    <h3>Please Note</h3>
+    <ul>
+        <li>You have to be an <strong class="red">English Native Speaker</strong>.</li>
+        <li>You have to complete the ratings for all sentences. <strong class="red">All fields are required.</strong></li>
+
+    </ul>
+    <fieldset>
+        <legend><h3>Instructions</h3></legend>
+        <p>
+        In this task, you will be given 5 source sentences and each source sentence has 4 simplified sentences from different systems. The goal is to judge each simplified sentence using 1-5 rating scale. You need to read each source sentence and its simplified sentences then give your opinions on three aspects:
+        <ul>
+            <li><strong>Fluency </strong>(or Grammaticality): is it grammatically correct and well-formed? </li>
+            <li><strong>Simplicity</strong>: is it simpler than the original sentence? </li>
+            <li><strong>Adequacy</strong> (or Meaning preservation): does it preserve meaning of the original sentence? </li>
+        </ul>
+        <strong>Use the sliders to indicate how much you agree with the statements</strong> (0 = Strongly disagree, 5 = Strongly agree).
+        </p>
+        
+        <p>
+            Some clarifications:
+            <ul>
+                <li>
+                    It is valid for the Simplified version of an Original sentence to be composed of more than one sentence.
+                    Splitting a complex and long sentence into several smaller ones helps readability sometimes.
+                    However, it is up to you to judge if the splitting actually made the sentence easier to read/understand or not.
+                </li>
+                <li>
+                    Different systems may produce the same simplified sentences, please judge accordingly.
+                </li>
+                <li>
+                    Fluency should be judged looking solely at the Simplified sentence.
+                    In your rating, mainly consider the grammatical and/or spelling errors, but also 'how well' (or natural) the sentence reads.
+                </li>
+                <li>
+                    Adequacy (or meaning preservation) and Simplicity should be judged looking at both the Original and Simplified versions.
+                    Judge whether or not the changes made preserved the Original meaning or not, and if they made it
+                    easier to understand, respectively.
+                    What if Original and Simplified are exactly the same? As the question in the form states, we ask you to judge if Simplified is "easier to understand" than Original.
+                    This implies that changes should have been made.
+                </li>
+                <li>
+                    It is very likely that Simplified does no have all the details that Original presented.
+                    When scoring Adequacy, it is up to you to judge the impact those changes had in the meaning of the sentence.
+                </li>
+                <li>
+                    Judging the quality of a simplification is subjective. Each person has their own opinion on what is fluent, adequate or simple.
+                    That is why we are collecting a big number of judgments, so that we can study the agreement/disagreement of the ratings.
+                    This is also why we do not provide you with examples: it is a way to prevent our own judgement biases to affect your personal judgments.
+                </li>
+            </ul>
+        </p>
+        <strong class="red">Please read the instructions carefully.</strong>
+        <p>Thank you!</p>
+    </fieldset>
+    <hr>
+
+    <fieldset>
+        <legend>Sentence 1 of 5</legend>
+
+        <p class="orig_sent_id"><strong>ID: </strong>${orig_sent_id_1}</p>
+        <p><strong>Original: </strong>${orig_sent_1}</p>
+        <table style="width: 100%" class="rating">
+            <colgroup>
+               <col span="1" class="col_sent">
+               <col span="1" class="col_rating_slider">
+               <col span="1" class="col_rating_slider">
+               <col span="1" class="col_rating_slider">
+            </colgroup>
+            <tr>
+                <th class="col_sent_header"><strong>Simplified sentences:</strong></th>
+                <th class="col_rating_header">Fluency</th>
+                <th class="col_rating_header">Simplicity</th>
+                <th class="col_rating_header">Adequacy</th>    
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_11}</span>1. ${simp_sent_11}</td>
+                <td><crowd-slider name="fluency_11" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_11" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_11" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_12}</span>2. ${simp_sent_12}</td>
+                <td><crowd-slider name="fluency_12" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_12" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_12" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_13}</span>3. ${simp_sent_13}</td>
+                <td><crowd-slider name="fluency_13" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_13" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_13" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+    
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_14}</span>4. ${simp_sent_14}</td>
+                <td><crowd-slider name="fluency_14" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_14" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_14" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+        </table>
+    </fieldset>
+    <br><hr><br>
+    
+    <fieldset>
+        <legend>Sentence 2 of 5</legend>
+
+        <p class="orig_sent_id"><strong>ID: </strong>${orig_sent_id_2}</p>
+        <p><strong>Original: </strong>${orig_sent_2}</p>
+        <table style="width: 100%" class="rating">
+            <colgroup>
+                <col span="1" class="col_sent">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+            </colgroup>
+            <tr>
+                <th class="col_sent_header"><strong>Simplified sentences:</strong></th>
+                <th class="col_rating_header">Fluency</th>
+                <th class="col_rating_header">Simplicity</th>
+                <th class="col_rating_header">Adequacy</th>    
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_21}</span>1. ${simp_sent_21}</td>
+                <td><crowd-slider name="fluency_21" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_21" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_21" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_22}</span>2. ${simp_sent_22}</td>
+                <td><crowd-slider name="fluency_22" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_22" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_22" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_23}</span>3. ${simp_sent_23}</td>
+                <td><crowd-slider name="fluency_23" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_23" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_23" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+        
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_24}</span>4. ${simp_sent_24}</td>
+                <td><crowd-slider name="fluency_24" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_24" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_24" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+        </table>
+    </fieldset>
+    <br><hr><br>
+
+    <fieldset>
+        <legend>Sentence 3 of 5</legend>
+
+        <p class="orig_sent_id"><strong>ID: </strong>${orig_sent_id_3}</p>
+        <p><strong>Original: </strong>${orig_sent_3}</p>
+        <table style="width: 100%" class="rating">
+            <colgroup>
+                <col span="1" class="col_sent">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+            </colgroup>
+            <tr>
+                <th class="col_sent_header"><strong>Simplified sentences:</strong></th>
+                <th class="col_rating_header">Fluency</th>
+                <th class="col_rating_header">Simplicity</th>
+                <th class="col_rating_header">Adequacy</th>    
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_31}</span>1. ${simp_sent_31}</td>
+                <td><crowd-slider name="fluency_31" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_31" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_31" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_32}</span>2. ${simp_sent_32}</td>
+                <td><crowd-slider name="fluency_32" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_32" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_32" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_33}</span>3. ${simp_sent_33}</td>
+                <td><crowd-slider name="fluency_33" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_33" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_33" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+        
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_34}</span>4. ${simp_sent_34}</td>
+                <td><crowd-slider name="fluency_34" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_34" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_34" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+        </table>
+    </fieldset>
+    <br><hr><br>
+    <fieldset>
+        <legend>Sentence 4 of 5</legend>
+
+        <p class="orig_sent_id"><strong>ID: </strong>${orig_sent_id_4}</p>
+        <p><strong>Original: </strong>${orig_sent_4}</p>
+        <table style="width: 100%" class="rating">
+            <colgroup>
+                <col span="1" class="col_sent">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+            </colgroup>
+            <tr>
+                <th class="col_sent_header"><strong>Simplified sentences:</strong></th>
+                <th class="col_rating_header">Fluency</th>
+                <th class="col_rating_header">Simplicity</th>
+                <th class="col_rating_header">Adequacy</th>    
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_41}</span>1. ${simp_sent_41}</td>
+                <td><crowd-slider name="fluency_41" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_41" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_41" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_42}</span>2. ${simp_sent_42}</td>
+                <td><crowd-slider name="fluency_42" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_42" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_42" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_43}</span>3. ${simp_sent_43}</td>
+                <td><crowd-slider name="fluency_43" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_43" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_43" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+        
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_44}</span>4. ${simp_sent_44}</td>
+                <td><crowd-slider name="fluency_44" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_44" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_44" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+        </table>
+    </fieldset>
+    <br><hr><br>
+    <fieldset>
+        <legend>Sentence 5 of 5</legend>
+
+        <p class="orig_sent_id"><strong>ID: </strong>${orig_sent_id_5}</p>
+        <p><strong>Original: </strong>${orig_sent_5}</p>
+        <table style="width: 100%" class="rating">
+            <colgroup>
+                <col span="1" class="col_sent">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+                <col span="1" class="col_rating_slider">
+            </colgroup>
+            <tr>
+                <th class="col_sent_header"><strong>Simplified sentences:</strong></th>
+                <th class="col_rating_header">Fluency</th>
+                <th class="col_rating_header">Simplicity</th>
+                <th class="col_rating_header">Adequacy</th>    
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_51}</span>1. ${simp_sent_51}</td>
+                <td><crowd-slider name="fluency_51" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_51" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_51" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_52}</span>2. ${simp_sent_52}</td>
+                <td><crowd-slider name="fluency_52" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_52" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_52" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_53}</span>3. ${simp_sent_53}</td>
+                <td><crowd-slider name="fluency_53" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_53" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_53" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+        
+            <tr>
+                <td><span class="simp_sent_id"><strong>ID: </strong>${simp_sent_id_54}</span>4. ${simp_sent_54}</td>
+                <td><crowd-slider name="fluency_54" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="simplicity_54" min="1" max="5" required pin></crowd-slider></td>
+                <td><crowd-slider name="adequacy_54" min="1" max="5" required pin></crowd-slider></td>
+            </tr>
+            
+        </table>
+    </fieldset>
+
+    <br><hr><br>
+
+    <h4>Suggestions (Optional)</h4>
+    <p>If you have any suggestions regarding the task, please provide them below:</p>
+    <crowd-text-area name="suggestions" placeholder="Type your suggestions here..."></crowd-text-area>
+</crowd-form>
+</div>
+
+<script>
+    // test
+// document.getElementById("consent-form-container").style.display = "none";
+// document.getElementById("task-container").style.display = "block";
+</script>
+
