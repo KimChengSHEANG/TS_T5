@@ -56,7 +56,7 @@ python scripts/evaluate_4tokens_pretrained_model.py
 Used tokens: C: 0.95         L: 0.75         WR: 0.75        DTD: 0.75     
 
 Expected results: 
-TurkCorpus: SARI: 43.50      BLEU: 67.26     FKGL: 6.17
+TurkCorpus: 	SARI: 43.50      BLEU: 67.26     FKGL: 6.17
 ASSET: 		SARI: 45.05      BLEU: 72.24     FKGL: 6.33
 ```
 
