@@ -1,6 +1,8 @@
 # TS with T5
 
-## Requirements
+
+
+## Install requirements
 
 **Step1**. Install pytorch follow this link: https://pytorch.org/get-started/locally/
 
@@ -9,7 +11,7 @@
 # GPU version
 pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 torchaudio==0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
 
-# Training on CPU is not recommended. It's two slow!
+# Training on CPU is not recommended. It's too slow!
 ```
 
 **Step2.** Install all requirements
@@ -17,6 +19,8 @@ pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 torchaudio==0.8.0 -f htt
 ```bash
 pip install -r requirements.txt
 ```
+
+
 
 ## Train
 
@@ -83,7 +87,7 @@ python scripts/generate_with_5tokens_pretrained_model.py
 
 If you make use of the code in this repository, please cite the following papers:
 
-```latex
+```
 @inproceedings{sheang-saggion-2021-controllable,
     title = "Controllable Sentence Simplification with a Unified Text-to-Text Transfer Transformer",
     author = "Sheang, Kim Cheng  and Saggion, Horacio",
