@@ -9,7 +9,7 @@
 # GPU version
 pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 torchaudio==0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
 
-# It is too slow to train or evaluate on CPU, so please use GPU instead.
+# Training on CPU is not recommended. It's two slow!
 ```
 
 **Step2.** Install all requirements
@@ -24,13 +24,76 @@ pip install -r requirements.txt
 python scripts/train.py
 ```
 
+
+
 ## Evaluate
 
-Evaluate the lastest training.
+Evaluate the last trained model
 
 ```bash
 python scripts/evaluate.py
+
 ```
 
 
-# Pretrained model will be uploaded soon
+
+# Generate
+
+Edit the scripts/generate.py to pass input and output filepath.
+
+```python
+python scripts/generate.py
+```
+
+
+
+
+
+# Evaluate pretrained models
+
+4 tokens model
+
+```python
+# evaluate TurkCorpus and ASSET datasets
+python scripts/evaluate_4tokens_pretrained_model.py
+
+# generate using other input file
+ # edit the file to change input and output files. Default TurkCorpus complex is used as an example.
+python scripts/generate_with_4tokens_pretrained_model.py
+```
+
+
+
+5 tokens model
+
+```python
+# evaluate TurkCorpus and ASSET datasets
+python scripts/evaluate_5tokens_pretrained_model.py
+
+# generate using other input file
+ # edit the file to change input and output files. Default TurkCorpus complex is used as an example.
+python scripts/generate_with_5tokens_pretrained_model.py
+```
+
+
+
+
+
+# Citation
+
+If you make use of the code in this repository, please cite the following papers:
+
+```latex
+@inproceedings{sheang-saggion-2021-controllable,
+    title = "Controllable Sentence Simplification with a Unified Text-to-Text Transfer Transformer",
+    author = "Sheang, Kim Cheng  and Saggion, Horacio",
+    booktitle = "Proceedings of the 14th International Conference on Natural Language Generation",
+    month = aug,
+    year = "2021",
+    address = "Aberdeen, Scotland, UK",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.inlg-1.38",
+    pages = "341--352"
+}
+```
+
