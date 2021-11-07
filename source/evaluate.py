@@ -13,7 +13,7 @@ from source.preprocessor import Preprocessor
 import torch
 from transformers import T5ForConditionalGeneration, T5TokenizerFast
 from source.resources import get_data_filepath, get_last_experiment_dir, EXP_DIR, TURKCORPUS_DATASET, REPO_DIR
-from source.helper import yield_lines, count_line, read_lines, log_stdout, generate_hash
+from source.helper import write_lines, yield_lines, count_line, read_lines, log_stdout, generate_hash
 from easse.sari import corpus_sari
 import time
 import argparse
@@ -118,7 +118,7 @@ def evaluate_all_metrics(orig_filepath, sys_filepath, ref_filepaths):
     refs_sents = [read_lines(filepath) for filepath in ref_filepaths]
     # return get_all_scores(orig_sents, read_lines(sys_filepath), refs_sents, lowercase=True)
     # return get_all_scores(orig_sents, read_lines(sys_filepath), refs_sents, lowercase=False)
-    return get_all_scores(orig_sents, read_lines(sys_filepath), refs_sents)
+    return get_all_scores(orig_sents, read_lines(sys_filepath), refs_sents, lowercase=True)
 
 
 def evaluate_on(dataset, features_kwargs, phase, model_dirname=None):
@@ -192,6 +192,12 @@ def simplify_file(complex_filepath, output_filepath, features_kwargs, model_dirn
             output_file.write("\n")
     output_file.close()
 
+def pos_process(filepath):
+    lines = []
+    for line in yield_lines(filepath):
+        lines.append(line.replace("''", '"'))
+    write_lines(lines, filepath)
+    
 def evaluate_on_TurkCorpus(features_kwargs, phase, model_dirname=None):
     dataset = TURKCORPUS_DATASET
 
@@ -214,12 +220,13 @@ def evaluate_on_TurkCorpus(features_kwargs, phase, model_dirname=None):
             print("File is already processed.")
         else:
             simplify_file(complex_filepath, pred_filepath, features_kwargs, model_dirname)
-
+            pos_process(pred_filepath)
+            
         # print("Evaluate: ", pred_filepath)
         with log_stdout(output_score_filepath):
             # print("features_kwargs: ", features_kwargs)
-            # scores = evaluate_system_output(test_set="turkcorpus_test", sys_sents_path=str(pred_filepath))
-            scores = evaluate_all_metrics(complex_filepath, pred_filepath, ref_filepaths)
+            # scores = evaluate_all_metrics(complex_filepath, pred_filepath, ref_filepaths)
+            scores = evaluate_system_output(test_set="turkcorpus_test", sys_sents_path=str(pred_filepath), lowercase=True)
             if "WordRatioFeature" in features_kwargs:
                 print("W:", features_kwargs["WordRatioFeature"]["target_ratio"], "\t", end="")
             if "CharRatioFeature" in features_kwargs:
@@ -230,11 +237,11 @@ def evaluate_on_TurkCorpus(features_kwargs, phase, model_dirname=None):
                 print("WR:", features_kwargs["WordRankRatioFeature"]["target_ratio"], "\t", end="")
             if "DependencyTreeDepthRatioFeature" in features_kwargs:
                 print("DTD:", features_kwargs["DependencyTreeDepthRatioFeature"]["target_ratio"], "\t", end="")
-            # print("{:.2f} \t {:.2f} \t {:.2f} ".format(scores['sari'], scores['bleu'], scores['fkgl']))
-            print("{:.2f} \t {:.2f} \t {:.2f} ".format(scores['SARI'], scores['BLEU'], scores['FKGL']))
+            print("SARI: {:.2f} \t BLEU: {:.2f} \t FKGL: {:.2f} ".format(scores['sari'], scores['bleu'], scores['fkgl']))
+            # print("{:.2f} \t {:.2f} \t {:.2f} ".format(scores['SARI'], scores['BLEU'], scores['FKGL']))
 
             print("Execution time: --- %s seconds ---" % (time.time() - start_time))
-            return scores['SARI']
+            return scores['sari']
             
     else:
         print("Already exist: ", output_score_filepath)
@@ -262,10 +269,11 @@ def evaluate_on_asset(features_kwargs, phase, model_dirname=None):
             print("File is already processed.")
         else:
             simplify_file(complex_filepath, pred_filepath, features_kwargs, model_dirname)
+            pos_process(pred_filepath)
             
         with log_stdout(output_score_filepath):
             # scores = evaluate_all_metrics(complex_filepath, pred_filepath, ref_filepaths)
-            scores = evaluate_system_output(test_set="asset_test", sys_sents_path=str(pred_filepath))
+            scores = evaluate_system_output(test_set="asset_test", sys_sents_path=str(pred_filepath), lowercase=True)
             if "WordRatioFeature" in features_kwargs:
                 print("W:", features_kwargs["WordRatioFeature"]["target_ratio"], "\t", end="")
             if "CharRatioFeature" in features_kwargs:
@@ -276,7 +284,7 @@ def evaluate_on_asset(features_kwargs, phase, model_dirname=None):
                 print("WR:", features_kwargs["WordRankRatioFeature"]["target_ratio"], "\t", end="")
             if "DependencyTreeDepthRatioFeature" in features_kwargs:
                 print("DTD:", features_kwargs["DependencyTreeDepthRatioFeature"]["target_ratio"], "\t", end="")
-            print("{:.2f} \t {:.2f} \t {:.2f} ".format(scores['sari'], scores['bleu'], scores['fkgl']))
+            print("SARI: {:.2f} \t BLEU: {:.2f} \t FKGL: {:.2f} ".format(scores['sari'], scores['bleu'], scores['fkgl']))
 
             print("Execution time: --- %s seconds ---" % (time.time() - start_time))
     else:

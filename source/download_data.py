@@ -82,6 +82,7 @@ def download_4tokens_trained_model():
     if not pretrained_model.exists():
         print("Downloading 4 tokens pretrained models...")
         dst_file = EXP_DIR / "model_4tokens.zip"
+        
         GoogleDriveDownloader.download_file_from_google_drive(file_id='19sDdfrnRDAeL6bKraKxb8mrI9t7JCdVE', dest_path=dst_file, unzip=True)
         os.remove(dst_file)
 

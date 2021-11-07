@@ -1,2 +1,4 @@
 experiments/
 *.pyc
+source/__pycache__/.syncthing.download_data.cpython-37.pyc.tmp
+._README.md

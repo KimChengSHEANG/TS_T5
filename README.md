@@ -55,26 +55,66 @@ python scripts/generate.py
 
 # Evaluate pretrained models
 
-4 tokens model
+## 4 tokens model
 
 ```python
 # evaluate TurkCorpus and ASSET datasets
 python scripts/evaluate_4tokens_pretrained_model.py
+```
 
-# generate using other input file
+
+
+### Default tokens and expected results
+
+```
+Used tokens: C: 0.95         L: 0.75         WR: 0.75        DTD: 0.75       
+
+Expected results: 
+TurkCorpus: SARI: 43.50      BLEU: 67.26     FKGL: 6.17
+ASSET: 		SARI: 45.05      BLEU: 72.24     FKGL: 6.33
+```
+
+
+
+#### Generate using other input file
+
+```python
  # edit the file to change input and output files. Default TurkCorpus complex is used as an example.
 python scripts/generate_with_4tokens_pretrained_model.py
 ```
 
 
 
-5 tokens model
+
+
+## 5 tokens model
 
 ```python
 # evaluate TurkCorpus and ASSET datasets
 python scripts/evaluate_5tokens_pretrained_model.py
+```
 
-# generate using other input file
+
+
+### Default tokens and expected results
+
+```
+Used tokens: W: 1.05 	C: 0.95 	L: 0.75 	WR: 0.75 	DTD: 0.75
+
+Expected results: 
+TurkCorpus: SARI: 43.34 	 BLEU: 65.54 	 FKGL: 5.55 
+ASSET: 		SARI: 45.26 	 BLEU: 72.19 	 FKGL: 5.92 
+```
+
+
+
+#### 
+
+
+
+#### Generate using other input file
+
+```python
  # edit the file to change input and output files. Default TurkCorpus complex is used as an example.
 python scripts/generate_with_5tokens_pretrained_model.py
 ```

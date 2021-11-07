@@ -22,4 +22,4 @@ features_kwargs = {
 
 # generate and evaluate both datasets, the outputs and scores are stored in `experiments/model_5tokens/outputs`
 evaluate_on_TurkCorpus(features_kwargs, 'test', 'model_4tokens')
-# evaluate_on_asset(features_kwargs, 'test', 'model_4tokens')
+evaluate_on_asset(features_kwargs, 'test', 'model_4tokens')
