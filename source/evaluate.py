@@ -16,7 +16,6 @@ from source.resources import get_data_filepath, get_last_experiment_dir, EXP_DIR
 from source.helper import write_lines, yield_lines, count_line, read_lines, log_stdout, generate_hash
 from easse.sari import corpus_sari
 import time
-import argparse
 
 
 def set_seed(seed):
@@ -173,7 +172,7 @@ def evaluate_on(dataset, features_kwargs, phase, model_dirname=None):
         print("".join(read_lines(output_score_filepath)))
 
 
-def simplify_file(complex_filepath, output_filepath, features_kwargs, model_dirname=None):
+def simplify_file(complex_filepath, output_filepath, features_kwargs, model_dirname=None, post_processing=True):
     load_model(model_dirname)
     preprocessor = Preprocessor(features_kwargs)
     
@@ -191,8 +190,10 @@ def simplify_file(complex_filepath, output_filepath, features_kwargs, model_dirn
         else:
             output_file.write("\n")
     output_file.close()
+    
+    if post_processing: post_process(output_file)
 
-def pos_process(filepath):
+def post_process(filepath):
     lines = []
     for line in yield_lines(filepath):
         lines.append(line.replace("''", '"'))
@@ -220,7 +221,6 @@ def evaluate_on_TurkCorpus(features_kwargs, phase, model_dirname=None):
             print("File is already processed.")
         else:
             simplify_file(complex_filepath, pred_filepath, features_kwargs, model_dirname)
-            pos_process(pred_filepath)
             
         # print("Evaluate: ", pred_filepath)
         with log_stdout(output_score_filepath):
@@ -269,7 +269,6 @@ def evaluate_on_asset(features_kwargs, phase, model_dirname=None):
             print("File is already processed.")
         else:
             simplify_file(complex_filepath, pred_filepath, features_kwargs, model_dirname)
-            pos_process(pred_filepath)
             
         with log_stdout(output_score_filepath):
             # scores = evaluate_all_metrics(complex_filepath, pred_filepath, ref_filepaths)
