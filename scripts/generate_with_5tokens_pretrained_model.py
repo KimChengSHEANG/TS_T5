@@ -10,6 +10,7 @@ from source.evaluate import simplify_file
 
 
 features_kwargs = {
+    'WordRatioFeature': {'target_ratio': 1.05},
     'CharRatioFeature': {'target_ratio': 0.95},
     'LevenshteinRatioFeature': {'target_ratio': 0.75},
     'WordRankRatioFeature': {'target_ratio': 0.75},
