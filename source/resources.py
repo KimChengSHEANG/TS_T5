@@ -9,6 +9,8 @@ from source.utils import download_url, unzip
 REPO_DIR = Path(__file__).resolve().parent.parent
 RESOURCES_DIR = REPO_DIR / 'resources'
 EXP_DIR = REPO_DIR / 'experiments'
+EXP_DIR.mkdir(parents=True, exist_ok=True)
+
 DATASETS_DIR = RESOURCES_DIR / 'datasets'
 
 PROCESSED_DATA_DIR = RESOURCES_DIR / "processed_data"
