@@ -1,4 +1,53 @@
-experiments/
+/experiments/
+/lightning_logs/
+/resources/DUMPS/
+.idea
+/resources
+/results
+/scripts/lightning_logs
+/scripts/wandb
+/outputs
+/others
+
+
+.python-version
 *.pyc
-source/__pycache__/.syncthing.download_data.cpython-37.pyc.tmp
-._README.md
+/TS_T5 Human evaluation
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+/plots/data/

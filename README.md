@@ -1,5 +1,15 @@
 # TS with T5
 
+
+
+# Dependencies
+
+
+
+* Tested with Python 3.7.5
+
+
+
 ## Install requirements
 
 **Step1**. Install pytorch follow this link: https://pytorch.org/get-started/locally/
@@ -17,6 +27,10 @@ pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 torchaudio==0.8.0 -f htt
 ```bash
 pip install -r requirements.txt
 ```
+
+
+
+# Usage
 
 ## Train
 
@@ -41,7 +55,11 @@ Edit the scripts/generate.py to pass input and output filepath.
 python scripts/generate.py
 ```
 
+
+
 # Evaluate pretrained models
+
+
 
 ## 4 tokens model
 
@@ -67,6 +85,8 @@ ASSET: 		SARI: 45.05      BLEU: 72.24     FKGL: 6.33
 python scripts/generate_with_4tokens_pretrained_model.py
 ```
 
+
+
 ## 5 tokens model
 
 ```python
@@ -91,6 +111,10 @@ ASSET: 		SARI: 45.26 	 BLEU: 72.19 	 FKGL: 5.92
 python scripts/generate_with_5tokens_pretrained_model.py
 ```
 
+
+
+
+
 # Citation
 
 If you make use of the code in this repository, please cite the following papers:
@@ -108,3 +132,11 @@ If you make use of the code in this repository, please cite the following papers
     pages = "341--352"
 }
 ```
+
+
+
+
+
+# Credits
+
+The preprocessing code was adopted from https://github.com/facebookresearch/access

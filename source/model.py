@@ -129,7 +129,7 @@ class T5FineTuner(pl.LightningModule):
         logs = {"val_loss": loss}
         # self.logger.experiment.add_scalars('loss', logs, global_step=self.global_step)
         # return {"val_loss": torch.tensor(loss)}
-        self.log('val_loss', loss)
+        self.log('val_loss', loss, batch_size=self.hparams.valid_batch_size)
         return torch.tensor(loss, dtype=float)
 
     def sari_validation_step(self, batch):
@@ -371,13 +371,14 @@ def train(train_args):
         # early_stop_callback=False,
         precision=16 if args.fp_16 else 32,
         amp_level=args.opt_level,
+        amp_backend='apex',
         # gradient_clip_val=args.max_grad_norm,
         # checkpoint_callback=checkpoint_callback,
         callbacks=[LoggingCallback(), checkpoint_callback],
         # logger=TensorBoardLogger(f'{args.output_dir}/logs'),
         num_sanity_val_steps=args.nb_sanity_val_steps,  # skip sanity check to save time for debugging purpose
         # plugins='ddp_sharded',
-        progress_bar_refresh_rate=1,
+        # progress_bar_refresh_rate=1,
 
     )
 
