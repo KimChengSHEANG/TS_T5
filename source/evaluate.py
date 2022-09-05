@@ -191,7 +191,7 @@ def simplify_file(complex_filepath, output_filepath, features_kwargs, model_dirn
             output_file.write("\n")
     output_file.close()
     
-    if post_processing: post_process(output_file)
+    if post_processing: post_process(output_filepath)
 
 def post_process(filepath):
     lines = []
