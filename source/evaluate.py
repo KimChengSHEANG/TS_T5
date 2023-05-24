@@ -82,15 +82,12 @@ def generate(sentence, preprocessor):
     input_ids = encoding["input_ids"].to(device)
     attention_masks = encoding["attention_mask"].to(device)
 
-    # set top_k = 50 and set top_p = 0.95 and num_return_sequences = 3
     beam_outputs = model.generate(
         input_ids=input_ids,
         attention_mask=attention_masks,
         do_sample=False,
         max_length=max_len,
         num_beams=8,
-        top_k=120,
-        top_p=0.98,
         early_stopping=True,
         num_return_sequences=1
     )

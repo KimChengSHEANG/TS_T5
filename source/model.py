@@ -77,8 +77,6 @@ class T5FineTuner(pl.LightningModule):
             do_sample=False,
             max_length=self.hparams.max_seq_length,
             num_beams=8,
-            top_k=120,
-            top_p=0.98,
             early_stopping=True,
             num_return_sequences=1
         )
@@ -149,15 +147,12 @@ class T5FineTuner(pl.LightningModule):
             input_ids = encoding["input_ids"].to(self.device)
             attention_masks = encoding["attention_mask"].to(self.device)
 
-            # set top_k = 50 and set top_p = 0.95 and num_return_sequences = 3
             beam_outputs = self.model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_masks,
                 do_sample=False,
                 max_length=self.hparams.max_seq_length,
                 num_beams=8,
-                top_k=120,
-                top_p=0.98,
                 early_stopping=True,
                 num_return_sequences=1
             ).to(self.device)
