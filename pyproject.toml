@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ts-t5"
+version = "0.1.0"
+description = "Controllable sentence simplification with T5 and control tokens (INLG 2021)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "torch==2.15.0",
+    "transformers==5.24.0",
+    "lightning==2.6.6",
+    "spacy==3.8.18",
+    "nltk==3.10.4",
+    "python-Levenshtein==0.27.5",
+    "sentencepiece==0.2.3",
+    "safetensors==0.8.0",
+    "huggingface_hub==2.4.0",
+    "easse @ git+https://github.com/feralvam/easse.git",
+]
+
+[project.optional-dependencies]
+search = ["optuna"]
+dev = ["pytest"]
+
+[project.scripts]
+ts-t5 = "ts_t5.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: needs model weights"]

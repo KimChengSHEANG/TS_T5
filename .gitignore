@@ -53,3 +53,7 @@ Thumbs.db
 /plots/data/
 .vscode/
 /.superpowers/
+
+!.python-version
+.venv/
+*.egg-info/
