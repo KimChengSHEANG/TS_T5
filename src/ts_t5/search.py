@@ -34,9 +34,13 @@ def search(model: str | Path, n_trials: int, test_set: str = 'turkcorpus', phase
     unknown = [t for t in tokens if t not in TOKEN_CLASSES]
     if unknown:
         raise ValueError(f'unknown tokens {unknown}; choose from {list(TOKEN_CLASSES)}')
+    tokens = tuple(t for t in TOKEN_CLASSES if t in tokens)  # canonical W,C,L,WR,DTD order; dedupes
+    if not tokens:
+        raise ValueError('tokens must not be empty')
     src_type, ref_paths = _refs(test_set, phase)
     orig = read_lines(get_data_filepath(test_set, phase, src_type))[:limit]
-    refs = [read_lines(p)[:len(orig)] for p in ref_paths]
+    refs = [read_lines(p)[:limit] for p in ref_paths]
+    assert all(len(r) == len(orig) for r in refs), 'reference lengths differ from source length'
 
     simplifier = Simplifier(model, {TOKEN_CLASSES[t]: {'target_ratio': 1.0} for t in tokens}, device=device)
 
@@ -47,7 +51,9 @@ def search(model: str | Path, n_trials: int, test_set: str = 'turkcorpus', phase
         simplifier.features_kwargs = features_kwargs
         simplifier.preprocessor = Preprocessor(features_kwargs)
         sys_sents = [simplifier.simplify(s).replace("''", '"') for s in orig]
-        return corpus_sari(orig, sys_sents, refs)
+        # Deliberate deviation: legacy generated on `phase` but scored with evaluate_system_output(
+        # test_set='turkcorpus_test'), i.e. valid predictions against test refs. Here valid refs are used.
+        return corpus_sari(orig, sys_sents, refs, lowercase=True)
 
     study = optuna.create_study(study_name='Tokens_study', direction='maximize')
     study.optimize(objective, n_trials=n_trials)
