@@ -1,0 +1,39 @@
+{
+  "model_name": "t5-base",
+  "max_seq_length": 80,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.1,
+  "adam_epsilon": 1e-08,
+  "warmup_steps": 5,
+  "train_batch_size": 64,
+  "valid_batch_size": 64,
+  "num_train_epochs": 5,
+  "custom_loss": false,
+  "gradient_accumulation_steps": 1,
+  "n_gpu": 1,
+  "fp_16": false,
+  "opt_level": "O1",
+  "max_grad_norm": 1.0,
+  "seed": 12,
+  "nb_sanity_val_steps": 0,
+  "train_sample_size": 1,
+  "valid_sample_size": 1,
+  "features_kwargs": {
+    "WordRatioFeature": {
+      "target_ratio": 0.8
+    },
+    "CharRatioFeature": {
+      "target_ratio": 0.8
+    },
+    "LevenshteinRatioFeature": {
+      "target_ratio": 0.8
+    },
+    "WordRankRatioFeature": {
+      "target_ratio": 0.8
+    },
+    "DependencyTreeDepthRatioFeature": {
+      "target_ratio": 0.8
+    }
+  },
+  "dataset": "wikilarge"
+}
