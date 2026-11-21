@@ -41,7 +41,7 @@ def evaluate_model(model, test_set: Literal['turkcorpus', 'asset'], features_kwa
     else:
         simplifier = Simplifier(model, features_kwargs, device=device)
     features_kwargs = simplifier.features_kwargs
-    src = get_data_filepath(test_set, 'test', 'complex')
+    src = get_data_filepath(test_set, 'test', 'orig' if test_set == 'asset' else 'complex')
     out = Path(out_dir) / f'{generate_hash(features_kwargs)}_{test_set}.test.txt'
     simplifier.simplify_file(src, out)
     return score_file(test_set, out)
