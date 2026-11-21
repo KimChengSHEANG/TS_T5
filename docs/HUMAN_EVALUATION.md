@@ -13,7 +13,7 @@ Source: the evaluation notes and the HIT designs in `human_evaluation/HIT_design
 - One HIT shows 5 source sentences, each with 4 simplifications from the 4 systems (system order is shuffled per HIT, and the system is not shown). The final HIT is `HIT_designs/mturk_rating_5sents.html`.
 - 100 source sentences per study (20 HITs), 5 raters per HIT, so 500 ratings per system and aspect.
 - Raters had to be English native speakers, 18 or older, and had to accept an information sheet and consent form. Data is used for research only.
-- The sentences for the study were sampled from the outputs of earlier systems' test sets (see the notes): Zhao et al. 2020 (200), Kriz et al. 2019 (200), Jiang et al. 2020 (100), Zhang and Lapata 2017 (100), Martin et al. 2020 (100, 50 per model). The 100 evaluated here come from these pools.
+- Sentences: the paper (INLG 2021, Table 3) says the 100 sentences were drawn at random from the TurkCorpus test set. The D8 evaluation notes also list candidate sources with sentence counts (Zhao et al. 2020: 200; Kriz et al. 2019: 200; Jiang et al. 2020: 100; Zhang and Lapata 2017: 100; Mallinson and Lapata 2019: 100, 50 from each model). Those are the authors' working notes, not a description of the final sample.
 
 ## Files
 
@@ -31,7 +31,7 @@ Column meaning in `mturk_batches/`: `HITId`, `AssignmentId`, `WorkerId` are salt
 
 Mean rating over 500 ratings (100 sentences x 5 raters). Command: `python scripts/anonymise_human_eval.py scores`.
 
-From `human_evaluation/mturk_batches/5tokens_batch_v*.csv`:
+From `human_evaluation/mturk_batches/5tokens_batch_v*.csv` (TS-T5 here is the 5-token model; this is the paper's Table 3):
 
 | System | Fluency | Simplicity | Adequacy |
 | --- | --- | --- | --- |
@@ -40,7 +40,7 @@ From `human_evaluation/mturk_batches/5tokens_batch_v*.csv`:
 | MUSS | 4.410 | 4.022 | 4.130 |
 | TS-T5 | 4.308 | 3.990 | 4.180 |
 
-From `human_evaluation/mturk_batches/4tokens_batch_4442003.csv`:
+From `human_evaluation/mturk_batches/4tokens_batch_4442003.csv` (not in the paper; TS-T5 here is the 4-token model):
 
 | System | Fluency | Simplicity | Adequacy |
 | --- | --- | --- | --- |
@@ -49,14 +49,15 @@ From `human_evaluation/mturk_batches/4tokens_batch_4442003.csv`:
 | MUSS | 4.230 | 3.882 | 3.954 |
 | TS-T5 | 4.114 | 3.692 | 3.860 |
 
-Cross-check from `human_evaluation/extracted_ratings/5tokens/*.csv`: identical to the first table. From `extracted_ratings/4tokens/*.csv`: within 0.011 of the second table (YATS fluency 3.925 against 3.910, MUSS 4.224 against 4.230, TS-T5 4.111/3.693/3.851 against 4.114/3.692/3.860).
+Cross-check from `human_evaluation/extracted_ratings/5tokens/*.csv`: identical to the first table. From `extracted_ratings/4tokens/*.csv`: within 0.015 of the second table (largest gaps: YATS fluency 3.925 against 3.910 and YATS adequacy 3.917 against 3.902; TS-T5 4.111/3.693/3.851 against 4.114/3.692/3.860).
 
 Comparison with the authors' summary table (`results/5tokens/final data/readme.md` in the source folder, not the paper itself): it lists YATS 4.032/3.62/3.924, DMASS-DCSS 3.848/3.706/3.482, MUSS 4.41/4.022/4.13 and "Our Model" 4.308/3.99/4.18. These match the `5tokens` batches to all digits. They do not match the `4tokens` batch (TS-T5 4.114/3.692/3.860).
 
 Caveats:
 
-- The summary table matches the batches stored in the `5tokens` folder. The folder names suggest that this study rated the 5-token model and the `4tokens` batch rated the 4-token model, but the source does not say so. Check which model the paper reports before quoting "TS-T5" figures as either one.
-- The evaluation notes in the source contain no numeric table of their own (it is an image in the notes), so the paper's table could not be compared directly.
+- The paper (Table 3) reports "Our Model" as "T5-base+All Tokens", the 5-token model, and its numbers match the `5tokens` batches (the paper shows 4.30 where this doc shows 4.308, a truncation). The `4tokens` batch is an extra run that is not in the paper. The tables below label TS-T5 accordingly. Which model each batch rated is inferred from the folder names.
+- The paper names the MUSS row "BART+ACCESS" (Martin et al. 2020a). Same system.
+- The D8 evaluation notes contain no numeric table (it is an image); the comparison with the paper uses its Table 3.
 - The 4-token extracted CSVs carry mojibake from the source xlsx (for example `H√§rtel`). It is kept as found.
 
 ## Provenance and privacy
