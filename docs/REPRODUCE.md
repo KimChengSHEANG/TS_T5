@@ -1,5 +1,101 @@
 # Reproducing
 
+This page says how to install the code, how to score the released models, what hardware the original models were
+trained on, and which parts of the work were re-run. The results are in `docs/RESULTS.md`. What we learned about the
+legacy code is in `docs/FINDINGS.md`.
+
+**The full training was not re-run on the new stack.** The released weights are the 2020 Google Drive runs (see
+"Reproduction gate"). What was re-run is scoring and generation with the released weights, plus a short smoke train.
+
+## Install
+
+```bash
+uv venv --python 3.11 && uv pip install -e '.[dev]'
+```
+
+Add `'.[dev,search]'` if you want `ts-t5 search` (it needs `optuna`). The package pins `torch==2.15.0`,
+`transformers==5.24.0`, `lightning==2.6.6`, `spacy==3.8.18` and `easse` at commit
+`6a4352ec299ed03fda8ee45445ca43d9c7673e89` (`pyproject.toml`). The spaCy model `en_core_web_sm` is downloaded on first use (`ts_t5.features.get_spacy_model`). The repo's
+`resources/` folder (datasets and caches) must be present, so run the commands from a repo checkout.
+Scripts in `scripts/` that draw figures need `matplotlib`, which is not a dependency of the package.
+
+## Score the released models
+
+Local release folders (written by `scripts/convert_ckpt_to_hf.py` and `ts_t5.train.convert_bin`): `experiments/hf/4tokens`
+and `experiments/hf/5tokens`. The Hugging Face repos `kcsheang/ts-t5-base-4tokens` and `kcsheang/ts-t5-base-5tokens`
+are **not uploaded yet**. Use the local folders until they are.
+
+```bash
+# 4-token model, both test sets, default tokens from the model config, on CPU
+.venv/bin/ts-t5 evaluate --model experiments/hf/4tokens --test-set all --device cpu --out outputs/4tokens
+
+# 5-token model
+.venv/bin/ts-t5 evaluate --model experiments/hf/5tokens --test-set all --device cpu --out outputs/5tokens
+
+# one test set, explicit tokens (what the gate used for the 4-token model)
+.venv/bin/ts-t5 evaluate --model experiments/hf/4tokens --test-set turkcorpus --device cpu \
+    --tokens C=0.95,L=0.75,WR=0.75,DTD=0.75 --out outputs/4tokens
+
+# after the upload, the same commands with the Hub ids
+.venv/bin/ts-t5 evaluate --model kcsheang/ts-t5-base-4tokens --test-set all --out outputs/hub-4tokens
+.venv/bin/ts-t5 evaluate --model kcsheang/ts-t5-base-5tokens --test-set all --out outputs/hub-5tokens
+```
+
+Flags: `--model`, `--device {cpu,cuda,mps}` (default: auto), `--tokens C=0.95,L=0.75` (default: the model config),
+`--test-set {turkcorpus,asset,all}`, `--out` (default `outputs/<model name>`; it refuses to write into `system_outputs/`).
+Output files are named `<hash>_<test set>.test.txt`, where the hash is the md5 of the token dict
+(4-token default `d859b9c4aab9f7a9c719167728399278`, 5-token default `267a9c5912b4c0e37bf8bf7260f7576d`).
+The command prints SARI, BLEU and FKGL. Expected values are the README numbers in the "Scoring (easse)" table below
+(within SARI +-0.1, BLEU and FKGL +-0.5).
+
+Use `--device cpu` for score checks. Beam search on MPS can differ numerically. A CPU run takes about 460-480 s per
+test set for the 4-token model and about 930-970 s for the 5-token model (one run each, Apple CPU, see below).
+
+To re-score the published outputs without running a model:
+
+```bash
+.venv/bin/python scripts/make_docs_tables.py scores     # about 1 minute
+.venv/bin/pytest tests/test_scoring.py -q
+```
+
+## Original hardware and run times
+
+Sources: `params.json` and `logs.txt` of the D8 backup runs (`docs/EXPERIMENTS.md` lists every run).
+
+| Run | Role | Settings (`params.json`) | Hardware and time (from the logs) |
+|---|---|---|---|
+| `exp_1601582154282931_best` (Sep 2020) | released 5-token model | t5-base, `max_seq_length` 256, batch 6 x accum 16, 5 epochs, lr 3e-4, seed 12 | `output_dir` is a Google Colab path (`/content/drive/My Drive/...`). GPU type and time not recorded. No `logs.txt`. |
+| `exp_1607800772213084_C_WR_L_DTD` (Dec 2020) | released 4-token model | same settings, with `features_kwargs` (all four tokens at 0.8) | `output_dir` is a local path (`/Users/kimchengsheang/...`). GPU type and time not recorded. No `logs.txt`. |
+| `exp_1614936426182236_C_WR_L_DTD` (Mar 2021) | 4-token retrain (not released) | t5-base, 256, batch 18 x 16, 5 epochs | last-epoch progress bar 4 h 45 min 57 s (includes validation); GPU type not recorded |
+| `exp_1622148499982082_4tokens` (May 2021) | D8 4-token run (rejected by the gate) | t5-base, 80, batch 32 x 4, 5 epochs | Colab path; last-epoch progress bar 2 h 28 min 32 s (includes validation); GPU type not recorded |
+| `exp_1654762192055501`, `exp_1655114935938119` (Jun 2022) | 5-token t5-base, batch 16 | t5-base, 80, 5 epochs | `scripts/train_and_evaluate.minipc.py`; wandb metadata: one GeForce RTX 3090, 12 CPU cores, Python 3.7.5 |
+
+The 2021 evaluation scripts on the same machine (wandb metadata, `TS_T5/scripts/wandb/run-20210716_*`) also report a
+GeForce RTX 3090. The paper states a maximum token length of 256, which matches the Drive `params.json` and not the D8 runs.
+The "last-epoch progress bar" times are the last tqdm bar of the last epoch in `logs.txt`. The bar restarts every epoch,
+so this is the time of one epoch with its validation, not the total run time. We did not find a total training time
+for any run, and none at all for the released models.
+
+Run times on the new stack (Apple Silicon Mac, this repo):
+
+| Step | Time | Source |
+|---|---|---|
+| `ts-t5 evaluate`, 4-token, one test set, CPU | about 460-480 s | gate runs (table in "Reproduction gate" below) |
+| `ts-t5 evaluate`, 5-token, one test set, CPU | about 930-970 s | same |
+| Smoke train (`configs/smoke.json`: t5-small, 100 steps, batch 8, 800 pairs) on MPS | about 32 s for train, validate, convert, load, simplify | slow test `tests/test_train.py` |
+
+```bash
+.venv/bin/ts-t5 train --config configs/smoke.json        # smoke train
+.venv/bin/pytest -m slow tests/test_train.py              # the same, as a test
+```
+
+`ts-t5 train --config 4tokens` and `--config 5tokens` use the Drive `params.json` values (`configs/{4,5}tokens.json`:
+max_seq_length 256, batch 6 x accumulation 16, lr 3e-4, 5 epochs, seed 12). They were **not run** to completion in this
+release. The new training code validates on TurkCorpus validation (aligned), where the 2021 code validated on mismatched
+files (`docs/FINDINGS.md`, finding 1), so a retrain can choose different checkpoints than 2021. Expect DTD tokens to differ
+from the 2021 training data as well (finding 3).
+
+
 ## Control-token features vs 2021 processed data
 
 `tests/test_features.py::test_encode_pair_matches_2021_processed_data` is marked xfail.
@@ -47,6 +143,10 @@ explicit tokens (4-token `C=0.95,L=0.75,WR=0.75,DTD=0.75`; 5-token adds `W=1.05`
 | D8 4-token (`exp_1622148499982082_4tokens`) | `pytorch_model.bin` | `2529e5832b8072db6386d358d8e888e73a2c19536c3bb0c24185ebba0f92c1d1` |
 | Drive 5-token zip (`19s68NxHybYta0t-smhWKrGZxUYyRlgHA`) | `model_5tokens/pytorch_model.bin` | `36091a14fbb5dfd0b0ecea20304df319f7ff92ae1044f120322461bf929d844f` |
 | D8 5-token (`exp_1623415175800762_5tokens`) | no `pytorch_model.bin`, only Lightning `.ckpt` | n/a |
+
+The Drive files are the same bytes as two runs in the D8 backup (`TS_backup/TS_T5.2/experiments`, sha256 computed from
+those files): `all/exp_1607800772213084_C_WR_L_DTD/pytorch_model.bin` is `e693d5bd...` (4-token) and
+`exp_1601582154282931_best/pytorch_model.bin` is `36091a14...` (5-token). So the released models are those two 2020 runs.
 
 Drive and D8 4-token files differ. They are different training runs: the Drive files are dated 2020 and their
 `params.json` has `max_seq_length` 256, batch 6 x accumulation 16; the D8 run has `max_seq_length` 80, batch 32 x 4,
