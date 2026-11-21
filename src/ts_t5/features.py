@@ -38,6 +38,16 @@ TOKEN_CLASSES = {
 }
 
 
+def canonical_features(features_kwargs: dict) -> dict:
+    """Reorder a features dict into canonical W, C, L, WR, DTD token order (unknown keys last, in given order).
+
+    transformers saves config.json with sorted keys, so a dict read back from a model config is alphabetical.
+    """
+    known = [c for c in TOKEN_CLASSES.values() if c in features_kwargs]
+    rest = [c for c in features_kwargs if c not in TOKEN_CLASSES.values()]
+    return {c: features_kwargs[c] for c in known + rest}
+
+
 def round(val):
     return '%.2f' % val
 

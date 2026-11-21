@@ -6,7 +6,7 @@ import torch
 from transformers import T5ForConditionalGeneration, T5TokenizerFast
 
 from ts_t5.data import write_lines, yield_lines
-from ts_t5.features import FEATURES_4TOKENS, Preprocessor
+from ts_t5.features import FEATURES_4TOKENS, Preprocessor, canonical_features
 
 DEFAULT_MAX_LEN = 80
 TOKENIZER_FILES = ('tokenizer.json', 'spiece.model', 'tokenizer_config.json')
@@ -37,7 +37,8 @@ class Simplifier:
         self.tokenizer = self._load_tokenizer(model, local, params)
         ts_t5 = getattr(self.model.config, 'ts_t5', None) or {}
         self.max_len = int(ts_t5.get('max_seq_length') or params.get('max_seq_length') or DEFAULT_MAX_LEN)
-        self.features_kwargs = features_kwargs or ts_t5.get('features_kwargs') or FEATURES_4TOKENS
+        # explicit tokens keep the caller's order; config tokens come back sorted from config.json, so restore canonical order
+        self.features_kwargs = features_kwargs or canonical_features(ts_t5.get('features_kwargs') or FEATURES_4TOKENS)
         self.preprocessor = Preprocessor(self.features_kwargs)
 
     @staticmethod

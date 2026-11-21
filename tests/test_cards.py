@@ -49,3 +49,31 @@ def test_push_dry_run_lists_files_and_stays_offline(tmp_path, capsys, monkeypatc
     out = capsys.readouterr().out
     assert 'private: True' in out and 'README.md' in out and 'model.safetensors' in out
     assert 'optimizer.ckpt' not in out
+
+
+def test_push_real_upload_honours_visibility(tmp_path, monkeypatch):
+    import sys
+    from unittest import mock
+    sys.path.insert(0, str(REPO_DIR / 'scripts'))
+    from push_to_hub import push
+    for n in ('model.safetensors', 'config.json'):
+        (tmp_path / n).write_text('x')
+    card = tmp_path / 'card.md'
+    card.write_text('c')
+    fake = mock.MagicMock()
+    hub = mock.MagicMock(HfApi=mock.MagicMock(return_value=fake), CommitOperationAdd=mock.MagicMock())
+    monkeypatch.setitem(sys.modules, 'huggingface_hub', hub)
+    push(tmp_path, 'u/r', card, private=False, dry_run=False)
+    fake.update_repo_settings.assert_called_once_with('u/r', private=False)
+    fake.create_commit.assert_called_once()
+
+
+def test_push_dry_run_says_visibility(tmp_path, capsys):
+    import sys
+    sys.path.insert(0, str(REPO_DIR / 'scripts'))
+    from push_to_hub import push
+    for n in ('model.safetensors', 'config.json'):
+        (tmp_path / n).write_text('x')
+    (tmp_path / 'c.md').write_text('c')
+    push(tmp_path, 'u/r', tmp_path / 'c.md', private=False)
+    assert 'would set visibility: public' in capsys.readouterr().out

@@ -50,3 +50,14 @@ def test_encode_pair_c_l_wr_and_sentence_match_2021_processed_data():
 def test_encode_pair_dtd_matches_2021_processed_data():
     mismatches = [w_s for (g, _), (w, w_s) in _encode_all() if g['DTD'] != w['DTD']]
     assert not mismatches, mismatches[:3]
+
+
+def test_canonical_features_restores_training_order_and_hashes():
+    from ts_t5.data import generate_hash
+    from ts_t5.features import canonical_features
+    for feats, digest in ((FEATURES_4TOKENS, 'd859b9c4aab9f7a9c719167728399278'),
+                          (FEATURES_5TOKENS, '267a9c5912b4c0e37bf8bf7260f7576d')):
+        alphabetical = dict(sorted(feats.items()))
+        assert list(alphabetical) != list(feats)
+        assert generate_hash(canonical_features(alphabetical)) == digest
+        assert generate_hash(feats) == digest
