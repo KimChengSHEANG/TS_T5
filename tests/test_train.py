@@ -12,8 +12,8 @@ from ts_t5.train import convert, convert_bin, load_config, train
 
 def test_load_config_by_name_and_path(tmp_path):
     cfg = load_config('4tokens')
-    assert cfg['train_batch_size'] == 32 and cfg['gradient_accumulation_steps'] == 4
-    assert cfg['dataset'] == 'wikilarge' and cfg['max_seq_length'] == 80
+    assert cfg['train_batch_size'] == 6 and cfg['gradient_accumulation_steps'] == 16
+    assert cfg['dataset'] == 'wikilarge' and cfg['max_seq_length'] == 256
     assert list(load_config('5tokens')['features_kwargs'])[0] == 'WordRatioFeature'
     p = tmp_path / 'c.json'
     p.write_text('{"a": 1}')
@@ -41,9 +41,13 @@ def test_smoke_train_converts_and_loads(tmp_path):
 def test_convert_bin_roundtrip(tmp_path):
     from transformers import AutoConfig, T5ForConditionalGeneration
     model = T5ForConditionalGeneration(AutoConfig.from_pretrained('t5-small'))
-    torch.save(model.state_dict(), tmp_path / 'pytorch_model.bin')
+    state = model.state_dict()
+    state['decoder.block.0.layer.1.EncDecAttention.relative_attention_bias.weight'] = torch.zeros(1)  # stray 2020 key
+    torch.save(state, tmp_path / 'pytorch_model.bin')
     params = {'model_name': 't5-small', 'max_seq_length': '80', 'features_kwargs': "{'CharRatioFeature': {'target_ratio': 0.95}}"}
     out = convert_bin(tmp_path / 'pytorch_model.bin', tmp_path / 'hf', params)
     assert (out / 'model.safetensors').exists() and (out / 'tokenizer.json').exists()
+    _, info = T5ForConditionalGeneration.from_pretrained(out, output_loading_info=True)
+    assert not info['missing_keys'] and not info['unexpected_keys']
     cfg = json.loads((out / 'config.json').read_text())
     assert cfg['ts_t5'] == {'max_seq_length': 80, 'features_kwargs': {'CharRatioFeature': {'target_ratio': 0.95}}}

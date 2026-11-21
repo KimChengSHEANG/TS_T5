@@ -28,6 +28,13 @@ Scores above are from easse 6a4352ec299ed03fda8ee45445ca43d9c7673e89; each match
 
 ## Reproduction gate (local, CPU, no uploads)
 
+**Released weights: the Drive (2020) runs at `max_seq_length` 256**
+(`experiments/hf/{4,5}tokens`, `config.ts_t5.max_seq_length` 256). They reproduce the README and `system_outputs/`.
+SHA-256 of their `pytorch_model.bin`: 4-token `e693d5bdaefdd614b441bb5c25b1d88725d71d698d5727c960c0d8ea7e8b5f65`,
+5-token `36091a14fbb5dfd0b0ecea20304df319f7ff92ae1044f120322461bf929d844f`. The D8 tables below describe a later
+2021 run that does not reproduce the README (kept as `experiments/hf_d8`). `convert_bin` drops the unused stray key
+and the converted dirs load with no missing/unexpected keys.
+
 Result: **the D8 (2021) weights do not reproduce the README; the Google Drive weights do, but only at
 `max_seq_length` 256, not 80.** Gate margins: SARI +-0.1, BLEU/FKGL +-0.5. All runs: `ts-t5 evaluate --device cpu`,
 explicit tokens (4-token `C=0.95,L=0.75,WR=0.75,DTD=0.75`; 5-token adds `W=1.05`), beam 8, easse 6a4352e.
@@ -89,8 +96,8 @@ Identical-line share is against `system_outputs/TS_T5_*tokens/<hash>_*.test.txt`
 The published outputs come from the Drive weights run with `max_seq_length` 256 (the value in their `params.json`,
 and the paper says "maximum token of 256"). The D8 runs are different, later trainings: 18-22% identical lines and
 BLEU about 1-2 points high. Release candidates are therefore the Drive weights with `config.ts_t5.max_seq_length = 256`.
-The Global Constraints line "`max_length` = 80 for both paper models" is wrong for these weights. The existing slow
-test `test_simplify_real_model` asserts `s.max_len == 80` and must change if the Drive weights are released.
+The earlier constraint "`max_length` = 80 for both paper models" was wrong for these weights; the release uses 256.
+`test_simplify_real_model` now checks `max_len` against the model's `config.ts_t5`.
 The D8 weights are a legitimate model, but not the one the README, `system_outputs/` or the paper describe.
 
 ### Paper vs README (Sheang and Saggion, INLG 2021, Tables 2 and 5)
@@ -108,5 +115,5 @@ TurkCorpus (`WR0.85 L0.85 DTD0.85`, not 0.75) and the paper tokens were searched
 
 ### Slow tests
 
-`TS_T5_MODEL=experiments/hf/4tokens pytest -m slow`: 2 passed (37 s). That run uses the D8 weights at 80; it
-checks that the pipeline runs, not that scores reproduce.
+`TS_T5_MODEL=experiments/hf/4tokens pytest -m slow`: 2 passed (the Drive 4-token weights at 256). The score
+reproduction is the table above.

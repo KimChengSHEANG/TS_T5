@@ -23,5 +23,5 @@ def test_simplify_real_model():
            'The committee postponed the decision until additional evidence could be obtained from the relevant authorities .']
     out = [s.simplify(x) for x in src]
     print(list(zip(src, out)))
-    assert s.max_len == 80
+    assert s.max_len == int(s.model.config.ts_t5['max_seq_length'])  # 256 for the released Drive weights
     assert all(out) and all(o != x for o, x in zip(out, src))

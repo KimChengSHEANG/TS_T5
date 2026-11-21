@@ -83,6 +83,9 @@ def convert(ckpt: Path, out_dir: Path, params: dict) -> Path:
 def convert_bin(bin_path: Path, out_dir: Path, params: dict) -> Path:
     """Plain T5ForConditionalGeneration state dict (pytorch_model.bin) -> HF dir, same layout as `convert`."""
     state = torch.load(bin_path, map_location='cpu', weights_only=True)
+    # transformers 3.x also saved the decoder block-0 cross-attention relative_attention_bias, which T5 never
+    # uses (only self-attention biases are), so dropping it changes no output
+    state.pop('decoder.block.0.layer.1.EncDecAttention.relative_attention_bias.weight', None)
     return save_hf(state, out_dir, params)
 
 
