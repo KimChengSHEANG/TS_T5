@@ -14,6 +14,7 @@ dependencies = [
     "transformers==5.24.0",
     "lightning==2.6.6",
     "spacy==3.8.18",
+    "sacremoses==0.2.0",
     "nltk==3.10.4",
     "python-Levenshtein==0.27.5",
     "sentencepiece==0.2.3",
