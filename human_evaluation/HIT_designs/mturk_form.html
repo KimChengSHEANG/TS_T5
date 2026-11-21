@@ -1,0 +1,74 @@
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<style>
+	td{padding-top:20px;}
+</style>
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<div style="padding:15px;"> 
+
+<crowd-form answer-format="flatten-objects" >
+
+    <p>
+      In this evaluation, we need your opinions on three aspects of each simplified sentence through a 5-point Likert scale: <br/>
+	<ul>
+    	<li><strong>Grammaticality </strong>(or fluency): is it grammatically correct and well-formed? </li>
+        <li><strong>Simplicity</strong>: is it simpler than the original sentence? </li>
+        <li><strong>Meaning preservation</strong> (or adequacy): does it preserves meaning of the original sentence? </li>
+    </ul>
+
+        For this task, you are given <strong>one source sentence</strong> and <strong>n simplified sentences</strong> from different systems. The goal is to judge each simplified sentence using 1-5 rating scale, where 1 is the worst and 5 is the best.
+    </p>
+    <hr>
+
+    <p><strong>Original sentence: </strong></p>
+    <p>${original_sentence}</p><br>
+    <hr><br>
+    
+    <table style="width: 100%">
+        <colgroup>
+           <col span="1" style="width: 85%;">
+           <col span="1" style="width: 5%;">
+           <col span="1" style="width: 5%;">
+           <col span="1" style="width: 5%;">
+        </colgroup>
+        <tr>
+            <th style="text-align:left; "><strong>Simplified sentences:</strong></th>
+            <th><strong>Grammaticality</strong></th>
+            <th><strong>Simplicity</strong></th>
+            <th><strong>Meaning preservation</strong></th>    
+        </tr>
+        <tr>
+            <td>1. ${simplification_1}</td>
+            <td><crowd-slider name="grammar1" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="simplicity1" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="meaning1" min="1" max="5" required pin></crowd-slider></td>
+        </tr>
+        <tr>
+            <td>2. ${simplification_2}</td>
+            <td><crowd-slider name="grammar2" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="simplicity2" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="meaning2" min="1" max="5" required pin></crowd-slider></td>
+        </tr>
+        
+        <tr>
+            <td>3. ${simplification_3}</td>
+            <td><crowd-slider name="grammar3" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="simplicity3" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="meaning3" min="1" max="5" required pin></crowd-slider></td>
+        </tr>
+
+        <tr>
+            <td>4. ${simplification_4}</td>
+            <td><crowd-slider name="grammar4" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="simplicity4" min="1" max="5" required pin></crowd-slider></td>
+            <td><crowd-slider name="meaning4" min="1" max="5" required pin></crowd-slider></td>
+        </tr>
+        
+    </table>
+  <p>
+  </p>
+</crowd-form>
+</div>

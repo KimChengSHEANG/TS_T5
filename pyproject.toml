@@ -25,7 +25,7 @@ dependencies = [
 
 [project.optional-dependencies]
 search = ["optuna"]
-dev = ["pytest"]
+dev = ["pytest", "pandas", "openpyxl"]
 
 [project.scripts]
 ts-t5 = "ts_t5.cli:main"
