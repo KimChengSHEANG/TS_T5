@@ -213,6 +213,8 @@ Every README SARI/BLEU is higher than the paper. Paper Table 6 uses different to
 TurkCorpus (`WR0.85 L0.85 DTD0.85`, not 0.75) and the paper tokens were searched per test set; the README and
 `system_outputs/` use one 0.75 setting for both sets. README numbers were not edited.
 
+Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended.
+
 ### Slow tests
 
 `TS_T5_MODEL=experiments/hf/4tokens pytest -m slow`: 2 passed (the Drive 4-token weights at 256). The score

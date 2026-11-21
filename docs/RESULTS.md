@@ -70,12 +70,12 @@ What we can say, and what we cannot:
 - The weights behind those rows are the released weights: `pytorch_model.bin` in the D8 backup folders
   `exp_1607800772213084_C_WR_L_DTD` and `exp_1601582154282931_best` has the same sha256 as the Drive zips
   (`docs/REPRODUCE.md`, section "Weight hashes").
-- So the gap between paper and README comes from the scoring or decoding side, not from the weights.
+- So the gap between paper and README probably comes from the scoring or decoding side, not from the weights.
   We re-scored the README outputs with the pinned easse and got the README numbers, so easse (not the model) is
   at most one part of the story. We could not find which setting produced the lower paper numbers.
 - The paper's 5-token TurkCorpus row came from per-test-set searched tokens (Table 6: `WR/L/DTD 0.85`; see `docs/REPRODUCE.md`, "Paper vs README"). The README, `system_outputs/` and the 43.00 row in `for_ablations.txt` all use 0.75.
-  The 0.85 row in `for_ablations.txt` reads 42.98/75.15/6.58. These two facts do not fit together, and we left the
-  paper text alone. Treat the Table 6 reading as unconfirmed.
+  Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended. We left the
+  paper text alone.
 
 ## Five example simplifications
 

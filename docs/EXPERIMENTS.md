@@ -132,6 +132,7 @@ Two things to note:
   0.75 default, not 0.85. The paper's 4-token numbers (43.31 / 66.23 / 6.17, 44.91 / 71.96 / 6.32) are in
   `for_ablations.txt` (`docs/ABLATIONS.md`) and not in the `outputs.4` score logs above (43.16 / 65.87).
   We did not find the log for the paper row.
+- Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended.
 - The original-pipeline scores for the released models (43.16 and 43.00 SARI on TurkCorpus) are below the README
   (43.50 and 43.34), which we reproduce with the pinned easse (`docs/REPRODUCE.md`). We did not find whether the cause is the easse
   version, the decoding settings, or different output files.
