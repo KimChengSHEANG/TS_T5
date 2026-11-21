@@ -8,7 +8,7 @@ import lightning as L
 import torch
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
-from transformers import AutoConfig, T5ForConditionalGeneration, T5TokenizerFast
+from transformers import AutoConfig, GenerationConfig, T5ForConditionalGeneration, T5TokenizerFast
 
 from ts_t5.data import EXP_DIR, REPO_DIR, get_data_filepath, read_lines, write_lines
 from ts_t5.features import Preprocessor
@@ -89,6 +89,21 @@ def convert_bin(bin_path: Path, out_dir: Path, params: dict) -> Path:
     return save_hf(state, out_dir, params)
 
 
+def write_generation_config(model_dir: Path) -> None:
+    """Write generation_config.json with the decoding used for all reported scores (max_length = max_seq_length).
+
+    Bare generate()/pipeline() calls then decode like Simplifier. Only this file is written.
+    """
+    model_dir = Path(model_dir)
+    cfg = json.loads((model_dir / 'config.json').read_text())
+    gen_path = model_dir / 'generation_config.json'
+    gen = GenerationConfig.from_pretrained(model_dir) if gen_path.exists() else GenerationConfig.from_model_config(
+        AutoConfig.from_pretrained(model_dir))
+    gen.num_beams, gen.do_sample, gen.early_stopping, gen.num_return_sequences = 8, False, True, 1
+    gen.max_length = int(cfg['ts_t5']['max_seq_length'])
+    gen.save_pretrained(model_dir)
+
+
 def save_hf(state: dict, out_dir: Path, params: dict) -> Path:
     """Load a T5 state dict into params['model_name'] and save it with tokenizer and config.ts_t5."""
     out_dir = Path(out_dir)
@@ -106,5 +121,6 @@ def save_hf(state: dict, out_dir: Path, params: dict) -> Path:
     model.config.ts_t5 = {'max_seq_length': int(params['max_seq_length']), 'features_kwargs': features_kwargs}
     out_dir.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(out_dir, safe_serialization=True)
+    write_generation_config(out_dir)
     T5TokenizerFast.from_pretrained(params['model_name']).save_pretrained(out_dir)
     return out_dir

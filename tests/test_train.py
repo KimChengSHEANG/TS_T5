@@ -51,3 +51,14 @@ def test_convert_bin_roundtrip(tmp_path):
     assert not info['missing_keys'] and not info['unexpected_keys']
     cfg = json.loads((out / 'config.json').read_text())
     assert cfg['ts_t5'] == {'max_seq_length': 80, 'features_kwargs': {'CharRatioFeature': {'target_ratio': 0.95}}}
+
+
+def test_converted_dir_has_decoding_defaults(tmp_path):
+    from transformers import AutoConfig, T5ForConditionalGeneration
+    model = T5ForConditionalGeneration(AutoConfig.from_pretrained('t5-small'))
+    torch.save(model.state_dict(), tmp_path / 'pytorch_model.bin')
+    params = {'model_name': 't5-small', 'max_seq_length': 256, 'features_kwargs': {'CharRatioFeature': {'target_ratio': 0.95}}}
+    out = convert_bin(tmp_path / 'pytorch_model.bin', tmp_path / 'hf', params)
+    gen = json.loads((out / 'generation_config.json').read_text())
+    assert (gen['num_beams'], gen['early_stopping'], gen['max_length'], gen['num_return_sequences']) == (8, True, 256, 1)
+    assert gen['do_sample'] is False

@@ -9,8 +9,6 @@ tags:
 - controllable-generation
 - sentence-simplification
 - t5
-datasets:
-- wikilarge
 ---
 
 # TS-T5 base, 4-token model
@@ -88,7 +86,8 @@ Replace the sentence after the control tokens with your own. The repo's CLI buil
 `ts-t5 simplify` (see the GitHub README).
 
 Decoding used for all reported scores: `num_beams=8`, `do_sample=False`, `early_stopping=True`, `max_length=256`,
-input padded to 256 tokens. `generation_config.json` in this repo does not carry these, so pass them as above.
+input padded to 256 tokens. `generation_config.json` in this repo carries the same decoding settings, so a bare
+`model.generate(**inputs)` or `pipeline("text2text-generation")` call decodes the same way (padding to 256 aside).
 
 ## Evaluation
 
