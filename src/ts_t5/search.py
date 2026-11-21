@@ -2,16 +2,9 @@
 from pathlib import Path
 
 from ts_t5.data import ASSET, TURKCORPUS, get_data_filepath, read_lines
-from ts_t5.features import Preprocessor
+from ts_t5.features import TOKEN_CLASSES, Preprocessor
 from ts_t5.simplify import Simplifier
 
-TOKEN_CLASSES = {
-    'W': 'WordRatioFeature',
-    'C': 'CharRatioFeature',
-    'L': 'LevenshteinRatioFeature',
-    'WR': 'WordRankRatioFeature',
-    'DTD': 'DependencyTreeDepthRatioFeature',
-}
 # Legacy search space: trial.suggest_float(name, 0.20, 1.5, step=0.05)
 LOW, HIGH, STEP = 0.20, 1.5, 0.05
 

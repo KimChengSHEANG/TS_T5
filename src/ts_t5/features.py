@@ -28,6 +28,15 @@ FEATURES_4TOKENS = {
 }
 FEATURES_5TOKENS = {'WordRatioFeature': {'target_ratio': 1.05}, **FEATURES_4TOKENS}
 
+# CLI abbreviation -> feature class name, in canonical token order
+TOKEN_CLASSES = {
+    'W': 'WordRatioFeature',
+    'C': 'CharRatioFeature',
+    'L': 'LevenshteinRatioFeature',
+    'WR': 'WordRankRatioFeature',
+    'DTD': 'DependencyTreeDepthRatioFeature',
+}
+
 
 def round(val):
     return '%.2f' % val
