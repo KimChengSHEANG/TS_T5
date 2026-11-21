@@ -20,7 +20,7 @@ dependencies = [
     "sentencepiece==0.2.3",
     "safetensors==0.8.0",
     "huggingface_hub==2.4.0",
-    "easse @ git+https://github.com/feralvam/easse.git",
+    "easse @ git+https://github.com/feralvam/easse.git@6a4352ec299ed03fda8ee45445ca43d9c7673e89",
 ]
 
 [project.optional-dependencies]
