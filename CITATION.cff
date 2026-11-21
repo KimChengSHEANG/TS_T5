@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software or the released models, please cite the paper below."
+title: "TS-T5: controllable sentence simplification with T5"
+type: software
+license: CC-BY-NC-4.0
+repository-code: "https://github.com/KimChengSHEANG/TS_T5"
+authors:
+  - family-names: Sheang
+    given-names: Kim Cheng
+  - family-names: Saggion
+    given-names: Horacio
+preferred-citation:
+  type: conference-paper
+  title: "Controllable Sentence Simplification with a Unified Text-to-Text Transfer Transformer"
+  authors:
+    - family-names: Sheang
+      given-names: Kim Cheng
+    - family-names: Saggion
+      given-names: Horacio
+  collection-title: "Proceedings of the 14th International Conference on Natural Language Generation"
+  year: 2021
+  month: 8
+  location:
+    name: "Aberdeen, Scotland, UK"
+  publisher:
+    name: "Association for Computational Linguistics"
+  url: "https://aclanthology.org/2021.inlg-1.38"
+  start: 341
+  end: 352

@@ -36,3 +36,4 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["slow: needs model weights"]
+addopts = "-m 'not slow'"
