@@ -32,11 +32,13 @@ def push(model_dir: Path, repo_id: str, card: Path, private: bool = True, dry_ru
     for local, remote in files:
         print(f'  {remote}  <-  {local}')
     if dry_run:
+        print(f'would set visibility: {"private" if private else "public"} (also on an existing repo)')
         print('dry run: nothing uploaded (use --no-dry-run to upload)')
         return
     from huggingface_hub import CommitOperationAdd, HfApi
     api = HfApi()
     api.create_repo(repo_id, private=private, exist_ok=True)
+    api.update_repo_settings(repo_id, private=private)  # create_repo(exist_ok=True) leaves an existing repo's visibility alone
     api.create_commit(repo_id, operations=[CommitOperationAdd(path_in_repo=r, path_or_fileobj=str(l)) for l, r in files],
                       commit_message='Add TS-T5 model, tokenizer and card')
     print(f'uploaded to {repo_id}')
