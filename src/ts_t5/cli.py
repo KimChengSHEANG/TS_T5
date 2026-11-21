@@ -3,6 +3,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from ts_t5.data import REPO_DIR
 from ts_t5.features import TOKEN_CLASSES
 from ts_t5.simplify import Simplifier
 
@@ -38,12 +39,13 @@ def _cmd_train(args) -> int:
 
 def _cmd_evaluate(args) -> int:
     from ts_t5.evaluate import evaluate_model
-    from ts_t5.features import FEATURES_4TOKENS
+    out = Path(args.out) if args.out else Path('outputs') / Path(args.model.rstrip('/')).name
+    if out.resolve().is_relative_to((REPO_DIR / 'system_outputs').resolve()):
+        print('error: --out must not be inside system_outputs/ (published paper outputs)', file=sys.stderr)
+        return 2
     sets = ('turkcorpus', 'asset') if args.test_set == 'all' else (args.test_set,)
-    features = _features(args)
-    if features is None:  # score with the model's own defaults, as simplify does
-        features = Simplifier(args.model, None, device=args.device).features_kwargs or FEATURES_4TOKENS
-    rows = {t: evaluate_model(args.model, t, features, Path(args.out)) for t in sets}
+    simplifier = Simplifier(args.model, _features(args), device=args.device)
+    rows = {t: evaluate_model(simplifier, t, None, out) for t in sets}
     print(f'{"test set":<12}{"SARI":>8}{"BLEU":>8}{"FKGL":>8}')
     for t, r in rows.items():
         print(f'{t:<12}{r["sari"]:>8.2f}{r["bleu"]:>8.2f}{r["fkgl"]:>8.2f}')
@@ -92,7 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
     e = sub.add_parser('evaluate', help='print SARI/BLEU/FKGL on the test sets')
     model_args(e)
     e.add_argument('--test-set', choices=('turkcorpus', 'asset', 'all'), default='all')
-    e.add_argument('--out', default='system_outputs', help='directory for system outputs')
+    e.add_argument('--out', help='directory for system outputs (default: outputs/<model name>)')
     e.set_defaults(func=_cmd_evaluate)
 
     s = sub.add_parser('simplify', help='simplify a sentence or a file')

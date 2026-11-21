@@ -37,3 +37,38 @@ def test_cli_simplify_dispatch(monkeypatch, capsys):
     assert main(['simplify', '--model', 'm', '--device', 'cpu', 'hello']) == 0
     assert capsys.readouterr().out.strip() == 'HELLO'
     assert calls == {'model': 'm', 'fk': None, 'device': 'cpu'}
+
+
+def _fake_eval(monkeypatch):
+    seen = {'inst': [], 'eval': []}
+
+    class Fake:
+        def __init__(self, model, features_kwargs=None, device=None):
+            seen['inst'].append((model, features_kwargs, device))
+
+    def fake_eval(model, test_set, features_kwargs, out_dir, device=None):
+        seen['eval'].append((model, test_set, out_dir))
+        return {'sari': 1.0, 'bleu': 2.0, 'fkgl': 3.0}
+
+    monkeypatch.setattr('ts_t5.cli.Simplifier', Fake)
+    monkeypatch.setattr('ts_t5.evaluate.evaluate_model', fake_eval)
+    return seen
+
+
+def test_cli_evaluate_one_simplifier_and_device(monkeypatch, capsys):
+    seen = _fake_eval(monkeypatch)
+    assert main(['evaluate', '--model', 'org/m', '--device', 'cpu', '--test-set', 'all']) == 0
+    assert seen['inst'] == [('org/m', None, 'cpu')]
+    assert [e[1] for e in seen['eval']] == ['turkcorpus', 'asset']
+    assert seen['eval'][0][0] is seen['eval'][1][0]
+    assert str(seen['eval'][0][2]) == 'outputs/m'
+    assert 'turkcorpus' in capsys.readouterr().out
+
+
+def test_cli_evaluate_refuses_system_outputs(monkeypatch, capsys):
+    from ts_t5.data import REPO_DIR
+    seen = _fake_eval(monkeypatch)
+    for out in (REPO_DIR / 'system_outputs', REPO_DIR / 'system_outputs' / 'TS_T5_4tokens'):
+        assert main(['evaluate', '--model', 'm', '--out', str(out)]) == 2
+    assert 'system_outputs' in capsys.readouterr().err
+    assert seen['inst'] == []
