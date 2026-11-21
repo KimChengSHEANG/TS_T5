@@ -87,7 +87,7 @@ Replace the sentence after the control tokens with your own. The repo's CLI buil
 
 Decoding used for all reported scores: `num_beams=8`, `do_sample=False`, `early_stopping=True`, `max_length=256`,
 input padded to 256 tokens. `generation_config.json` in this repo carries the same decoding settings, so a bare
-`model.generate(**inputs)` or `pipeline("text2text-generation")` call decodes the same way (padding to 256 aside).
+`model.generate(**inputs)` call decodes the same way (padding to 256 aside).
 
 ## Evaluation
 
