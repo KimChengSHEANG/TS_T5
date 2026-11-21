@@ -7,7 +7,7 @@ import pytest
 import torch
 
 from ts_t5.simplify import Simplifier
-from ts_t5.train import convert, load_config, train
+from ts_t5.train import convert, convert_bin, load_config, train
 
 
 def test_load_config_by_name_and_path(tmp_path):
@@ -36,3 +36,14 @@ def test_smoke_train_converts_and_loads(tmp_path):
     assert mean(loss[-10:]) < mean(loss[:10])
     hf = convert(next(out.glob('*.ckpt')), tmp_path / 'hf', json.load(open(out / 'params.json')))
     assert isinstance(Simplifier(hf).simplify('This is a fairly long and complicated sentence .'), str)
+
+
+def test_convert_bin_roundtrip(tmp_path):
+    from transformers import AutoConfig, T5ForConditionalGeneration
+    model = T5ForConditionalGeneration(AutoConfig.from_pretrained('t5-small'))
+    torch.save(model.state_dict(), tmp_path / 'pytorch_model.bin')
+    params = {'model_name': 't5-small', 'max_seq_length': '80', 'features_kwargs': "{'CharRatioFeature': {'target_ratio': 0.95}}"}
+    out = convert_bin(tmp_path / 'pytorch_model.bin', tmp_path / 'hf', params)
+    assert (out / 'model.safetensors').exists() and (out / 'tokenizer.json').exists()
+    cfg = json.loads((out / 'config.json').read_text())
+    assert cfg['ts_t5'] == {'max_seq_length': 80, 'features_kwargs': {'CharRatioFeature': {'target_ratio': 0.95}}}

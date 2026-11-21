@@ -76,9 +76,19 @@ def train(config: dict) -> Path:
 
 def convert(ckpt: Path, out_dir: Path, params: dict) -> Path:
     """Lightning .ckpt -> HF dir: model.safetensors, tokenizer, config.ts_t5."""
-    out_dir = Path(out_dir)
     state = torch.load(ckpt, map_location='cpu', weights_only=False)['state_dict']  # trusted local file
-    state = {k[len('model.'):]: v for k, v in state.items() if k.startswith('model.')}
+    return save_hf(({k[len('model.'):]: v for k, v in state.items() if k.startswith('model.')}), out_dir, params)
+
+
+def convert_bin(bin_path: Path, out_dir: Path, params: dict) -> Path:
+    """Plain T5ForConditionalGeneration state dict (pytorch_model.bin) -> HF dir, same layout as `convert`."""
+    state = torch.load(bin_path, map_location='cpu', weights_only=True)
+    return save_hf(state, out_dir, params)
+
+
+def save_hf(state: dict, out_dir: Path, params: dict) -> Path:
+    """Load a T5 state dict into params['model_name'] and save it with tokenizer and config.ts_t5."""
+    out_dir = Path(out_dir)
     model = T5ForConditionalGeneration(AutoConfig.from_pretrained(params['model_name']))
     result = model.load_state_dict(state, strict=False)
     missing = sorted(set(result.missing_keys) - TOLERATED_MISSING)
