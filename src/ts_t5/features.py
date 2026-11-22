@@ -114,7 +114,7 @@ class RatioFeature:
         self.target_ratio = target_ratio
 
     def encode_sentence(self, sentence):
-        return f'{self.name}_{self.target_ratio}'
+        return f'{self.name}_{round(float(self.target_ratio))}'  # training's format: C_0.80, never C_0.8
 
     def encode_sentence_pair(self, complex_sentence, simple_sentence):
         return f'{self.name}_{self.feature_extractor(complex_sentence, simple_sentence)}', simple_sentence

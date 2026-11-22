@@ -15,6 +15,27 @@ def test_simplify_file_keeps_line_count(tmp_path, monkeypatch):
     assert read_lines(out) == ['A', '', 'IT "S']
 
 
+def test_simplify_returns_a_copy_instead_of_an_empty_line():
+    import torch
+
+    from ts_t5.features import FEATURES_4TOKENS, Preprocessor
+
+    class Copying:  # no weights: a model whose best beam decodes to the source
+        def generate(self, **kwargs):
+            return [0]
+
+        def __call__(self, *args, **kwargs):
+            return {'input_ids': torch.zeros(1), 'attention_mask': torch.zeros(1)}
+
+        def decode(self, *args, **kwargs):
+            return 'A cat .'
+
+    s = Simplifier.__new__(Simplifier)
+    s.model = s.tokenizer = Copying()
+    s.max_len, s.device, s.preprocessor = 256, 'cpu', Preprocessor(FEATURES_4TOKENS)
+    assert s.simplify('A cat .') == 'A cat .'
+
+
 @pytest.mark.slow
 def test_simplify_real_model():
     s = Simplifier(os.environ.get('TS_T5_MODEL', 'kcsheang/ts-t5-base-4tokens'))
@@ -50,4 +71,4 @@ def test_explicit_tokens_keep_given_order(tmp_path, monkeypatch):
     T5ForConditionalGeneration(cfg).save_pretrained(tmp_path)
     monkeypatch.setattr(Simplifier, '_load_tokenizer', staticmethod(lambda *a: None))
     fk = {'LevenshteinRatioFeature': {'target_ratio': 0.5}, 'CharRatioFeature': {'target_ratio': 0.9}}
-    assert Simplifier(tmp_path, fk, device='cpu').preprocessor.encode_sentence('x') == 'L_0.5 C_0.9  x'
+    assert Simplifier(tmp_path, fk, device='cpu').preprocessor.encode_sentence('x') == 'L_0.50 C_0.90  x'

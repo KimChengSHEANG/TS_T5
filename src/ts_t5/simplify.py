@@ -49,11 +49,11 @@ class Simplifier:
         return T5TokenizerFast.from_pretrained(str(model))
 
     def simplify(self, sentence: str) -> str:
-        """Simplified sentence, or '' when the model output equals its (encoded) input."""
+        """Best beam, decoded. A sentence the model leaves unchanged comes back unchanged."""
         encoded = self.preprocessor.encode_sentence(sentence)
         encoding = self.tokenizer('simplify: ' + encoded, max_length=self.max_len,
                                   padding='max_length', truncation=True, return_tensors='pt')
-        beam_outputs = self.model.generate(
+        output = self.model.generate(
             input_ids=encoding['input_ids'].to(self.device),
             attention_mask=encoding['attention_mask'].to(self.device),
             do_sample=False,
@@ -61,13 +61,8 @@ class Simplifier:
             num_beams=8,
             early_stopping=True,
             num_return_sequences=1,
-        )
-        outputs = []
-        for beam_output in beam_outputs:
-            sent = self.tokenizer.decode(beam_output, skip_special_tokens=True, clean_up_tokenization_spaces=True)
-            if sent.lower() != encoded.lower() and sent not in outputs:
-                outputs.append(sent)
-        return outputs[0] if outputs else ''
+        )[0]
+        return self.tokenizer.decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=True)
 
     # ponytail: one sentence per generate() call like 2021; batch only after the gate shows identical outputs
     def simplify_file(self, src: Path, dst: Path) -> Path:

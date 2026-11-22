@@ -27,6 +27,12 @@ def test_encode_sentence_exact_string():
     assert Preprocessor(FEATURES_5TOKENS).encode_sentence(s) == 'W_1.05 C_0.95 L_0.75 WR_0.75 DTD_0.75  ' + s
 
 
+@pytest.mark.parametrize('value,written', [(0.8, '0.80'), (1, '1.00'), ('0.5', '0.50'), (0.30000000000000004, '0.30')])
+def test_inference_writes_ratios_in_the_training_format(value, written):
+    # encode_sentence_pair trains on '%.2f'; T5 tokenises C_0.8 and C_0.80 differently
+    assert Preprocessor({'CharRatioFeature': {'target_ratio': value}}).encode_sentence('x') == f'C_{written}  x'
+
+
 # Fixture: first 30 wikilarge train pairs + line from the 2021 processed_data dir
 # 26ebb6aa762eac859c7b417fbb503eb7 (= hash of the 4-token 0.8 kwargs).
 def _encode_all():
