@@ -60,6 +60,8 @@ Use the defaults first. Other values change the output; the effect of each token
 
 ## How to use
 
+Do not use `pipeline()`; transformers 5 has no task for this model. Use the code below.
+
 ```python
 import torch
 from transformers import T5ForConditionalGeneration, T5TokenizerFast

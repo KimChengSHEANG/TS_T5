@@ -23,7 +23,7 @@ Scripts in `scripts/` that draw figures need `matplotlib`, which is not a depend
 
 Local release folders (written by `scripts/convert_ckpt_to_hf.py` and `ts_t5.train.convert_bin`): `experiments/hf/4tokens`
 and `experiments/hf/5tokens`. The Hugging Face repos `kcsheang/ts-t5-base-4tokens` and `kcsheang/ts-t5-base-5tokens`
-are **not uploaded yet**. Use the local folders until they are.
+hold the same files, so either works as `--model`.
 
 ```bash
 # 4-token model, both test sets, default tokens from the model config, on CPU
@@ -36,7 +36,7 @@ are **not uploaded yet**. Use the local folders until they are.
 .venv/bin/ts-t5 evaluate --model experiments/hf/4tokens --test-set turkcorpus --device cpu \
     --tokens C=0.95,L=0.75,WR=0.75,DTD=0.75 --out outputs/4tokens
 
-# after the upload, the same commands with the Hub ids
+# the same commands with the Hub ids
 .venv/bin/ts-t5 evaluate --model kcsheang/ts-t5-base-4tokens --test-set all --out outputs/hub-4tokens
 .venv/bin/ts-t5 evaluate --model kcsheang/ts-t5-base-5tokens --test-set all --out outputs/hub-5tokens
 ```

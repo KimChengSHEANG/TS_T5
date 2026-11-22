@@ -32,8 +32,8 @@ Default control tokens (the file name is the md5 hash of the token dict, see `do
 - 4-token: `C 0.95, L 0.75, WR 0.75, DTD 0.75` (hash `d859b9c4...`).
 - 5-token: `W 1.05` plus the same four (hash `267a9c59...`).
 
-Both models are read from the local release folders `experiments/hf/{4,5}tokens`. The future Hugging Face ids are
-`kcsheang/ts-t5-base-4tokens` and `kcsheang/ts-t5-base-5tokens`. They are not uploaded yet.
+Both models are read from the local release folders `experiments/hf/{4,5}tokens`. The same files are on Hugging Face as
+`kcsheang/ts-t5-base-4tokens` and `kcsheang/ts-t5-base-5tokens`.
 
 ## Do the released weights give these numbers?
 
