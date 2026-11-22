@@ -62,20 +62,25 @@ Paper values: `docs/REPRODUCE.md`, section "Paper vs README".
 | 5-token | TurkCorpus | 43.00 / 64.42 / 5.63 | 43.34 / 65.54 / 5.55 |
 | 5-token | ASSET | 45.04 / 71.21 / 5.88 | 45.26 / 72.19 / 5.92 |
 
-What we can say, and what we cannot:
+Where the gap comes from (traced on 2026-11-22):
 
-- The paper values are also in the 2020-21 score file `TS_T5/results/for_ablations.txt` (see `docs/ABLATIONS.md`).
-  The 4-token rows with `C0.95 L0.75 WR0.75 DTD0.75` give 43.31/66.23/6.17 (Turk) and 44.91/71.96/6.32 (ASSET).
-  The 5-token rows with `W1.05 C0.95 L0.75 WR0.75 DTD0.75` give 43.00/64.42/5.63 and 45.04/71.21/5.88.
-- The weights behind those rows are the released weights: `pytorch_model.bin` in the D8 backup folders
-  `exp_1607800772213084_C_WR_L_DTD` and `exp_1601582154282931_best` has the same sha256 as the Drive zips
-  (`docs/REPRODUCE.md`, section "Weight hashes").
-- So the gap between paper and README probably comes from the scoring or decoding side, not from the weights.
-  We re-scored the README outputs with the pinned easse and got the README numbers, so easse (not the model) is
-  at most one part of the story. We could not find which setting produced the lower paper numbers.
-- The paper's 5-token TurkCorpus row came from per-test-set searched tokens (Table 6: `WR/L/DTD 0.85`; see `docs/REPRODUCE.md`, "Paper vs README"). The README, `system_outputs/` and the 43.00 row in `for_ablations.txt` all use 0.75.
-  Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended. We left the
-  paper text alone.
+- The weights are the same. `pytorch_model.bin` in the D8 backup folders `exp_1607800772213084_C_WR_L_DTD` and
+  `exp_1601582154282931_best` has the same sha256 as the Drive zips (`docs/REPRODUCE.md`, section "Weight hashes").
+- The scorer is not the cause. The output files behind the paper's numbers are still in those run folders. Re-scored with
+  the pinned easse they give the paper's values exactly.
+- The decoding pass differs. The paper and the README score two generation passes of the same runs:
+
+| Model | Test set | Paper's output file | Re-scored, pinned easse | Lines shared with `system_outputs/` |
+|---|---|---|---|---|
+| 4-token | TurkCorpus | `outputs.2/d859b9c4...` | 43.31 / 66.23 / 6.17 | 307/359 |
+| 4-token | ASSET | `outputs.2/d859b9c4...` | 44.91 / 71.96 / 6.32 | 303/359 |
+| 5-token | TurkCorpus | `outputs.6/267a9c59...` | 43.00 / 64.42 / 5.63 | 294/359 |
+| 5-token | ASSET | `outputs.6/267a9c59...` | 45.04 / 71.21 / 5.88 | 293/359 |
+
+- The settings of the older pass were not recorded, so we do not know which one differs.
+- Resolved: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row. The Table 2 and 5 scores (43.00/64.42/5.63) use 0.75. The human evaluation (Table 3) rated outputs made at 0.85 (43.04/75.11/6.54): all 100 rated sentences equal `exp_1601582154282931_best/outputs.3/dbd23931...`. So the paper reports two settings of one model.
+- Cells of paper Tables 5 and 6 that the archive contradicts are listed in the README, section
+  "Errata and clarifications to the paper".
 
 ## Five example simplifications
 

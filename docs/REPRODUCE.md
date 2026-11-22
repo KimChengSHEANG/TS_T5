@@ -191,6 +191,9 @@ Drive weights, `max_seq_length` 256: **PASS**
 Identical-line share is against `system_outputs/TS_T5_*tokens/<hash>_*.test.txt`; output names matched the hashes
 `d859b9c4aab9f7a9c719167728399278` and `267a9c5912b4c0e37bf8bf7260f7576d`.
 
+Re-run on 2026-11-22 after the token-format fix and the removal of the copy filter (`ts-t5 evaluate --device cpu`,
+default tokens): all four output files are byte-identical to the Drive-weight run above, with the same scores.
+
 ### Which weights, and why
 
 The published outputs come from the Drive weights run with `max_seq_length` 256 (the value in their `params.json`,
@@ -209,11 +212,11 @@ The D8 weights are a legitimate model, but not the one the README, `system_outpu
 | 5-token | TurkCorpus | 43.00 / 64.42 / 5.63 | 43.34 / 65.54 / 5.55 | +0.34 / +1.12 / -0.08 |
 | 5-token | ASSET | 45.04 / 71.21 / 5.88 | 45.26 / 72.19 / 5.92 | +0.22 / +0.98 / +0.04 |
 
-Every README SARI/BLEU is higher than the paper. Paper Table 6 uses different token values for the 5-token model on
-TurkCorpus (`WR0.85 L0.85 DTD0.85`, not 0.75) and the paper tokens were searched per test set; the README and
-`system_outputs/` use one 0.75 setting for both sets. README numbers were not edited.
+Every README SARI/BLEU is higher than the paper. The cause is the decoding pass, not the scorer: the archived output
+files behind the paper's numbers re-score to them exactly (`docs/RESULTS.md`, "Paper numbers are lower than the README").
+README numbers were not edited.
 
-Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended.
+Resolved: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row. The Table 2 and 5 scores (43.00/64.42/5.63) use 0.75. The human evaluation (Table 3) rated outputs made at 0.85 (43.04/75.11/6.54): all 100 rated sentences equal `exp_1601582154282931_best/outputs.3/dbd23931...`. So the paper reports two settings of one model.
 
 ### Slow tests
 

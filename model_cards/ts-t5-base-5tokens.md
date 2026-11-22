@@ -27,7 +27,7 @@ These are the weights from the original 2020 Google Drive training runs (max seq
 - English only, sentence level (one sentence per input), Wikipedia-style text.
 - Non-commercial use only (CC BY-NC 4.0).
 - Output can drop or change meaning. Check it before relying on it, especially for names, numbers and negation.
-- Returns an empty result in the repo's `Simplifier` when the model just copies its input.
+- Can return the input unchanged when it finds nothing to simplify.
 
 ## Training data
 
@@ -56,7 +56,8 @@ Each token is a target ratio between the simplified output and the source.
 | `DTD` | dependency tree depth ratio (syntactic complexity) | 0.75 |
 
 Use the defaults first. Other values change the output; the effect of each token is in
-[docs/FINDINGS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/FINDINGS.md). At inference the value is written as given (`C_0.95`, not `C_0.950`).
+[docs/FINDINGS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/FINDINGS.md). Write every value with two decimals, as in training (`C_0.80`, not `C_0.8`: the model reads them differently), give all
+tokens, and keep their order.
 
 ## How to use
 
@@ -82,7 +83,7 @@ with torch.no_grad():
         max_length=256,
         num_return_sequences=1,
     )
-print(tokenizer.decode(out[0], skip_special_tokens=True))
+print(tokenizer.decode(out[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
 ```
 
 Replace the sentence after the control tokens with your own. The repo's CLI builds the input for you:
@@ -102,13 +103,16 @@ default tokens, decoding as above.
 | TurkCorpus test | 43.34 | 65.54 | 5.55 |
 | ASSET test | 45.26 | 72.19 | 5.92 |
 
-These are the numbers in the GitHub README. The tables in the paper are lower; the gap and what we could and could not
-trace is in [docs/RESULTS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/RESULTS.md).
+These are the numbers in the GitHub README. The tables in the paper are lower because they score an earlier decoding
+pass of the same runs. Details are in [docs/RESULTS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/RESULTS.md).
 
 ## Human evaluation
 
 Crowd raters (Amazon Mechanical Turk, 5-point scale, mean over 500 ratings = 100 sentences x 5 raters) scored this
-model against three other systems; this is Table 3 of the paper. The rated sentences were drawn from the TurkCorpus test set.
+model against three other systems; this is Table 3 of the paper. **The rated outputs used
+`W_1.05 C_0.95 L_0.85 WR_0.85 DTD_0.85`, not the default tokens above**, so these ratings do not describe the default
+behaviour. Against MUSS, TS-T5 is lower on fluency (p = 0.02). The differences on simplicity (p = 0.43) and adequacy
+(p = 0.36) are not significant. The rated sentences were drawn from the TurkCorpus test set.
 
 | System | Fluency | Simplicity | Adequacy |
 |---|---|---|---|
@@ -117,7 +121,7 @@ model against three other systems; this is Table 3 of the paper. The rated sente
 | MUSS | 4.410 | 4.022 | 4.130 |
 | TS-T5 (this model) | 4.308 | 3.990 | 4.180 |
 
-Protocol, anonymised ratings and caveats: [docs/HUMAN_EVALUATION.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/HUMAN_EVALUATION.md).
+Protocol, pseudonymised ratings and caveats: [docs/HUMAN_EVALUATION.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/HUMAN_EVALUATION.md).
 
 ## Training hyperparameters
 

@@ -27,7 +27,7 @@ These are the weights from the original 2020 Google Drive training runs (max seq
 - English only, sentence level (one sentence per input), Wikipedia-style text.
 - Non-commercial use only (CC BY-NC 4.0).
 - Output can drop or change meaning. Check it before relying on it, especially for names, numbers and negation.
-- Returns an empty result in the repo's `Simplifier` when the model just copies its input.
+- Can return the input unchanged when it finds nothing to simplify.
 
 ## Training data
 
@@ -55,7 +55,8 @@ Each token is a target ratio between the simplified output and the source.
 | `DTD` | dependency tree depth ratio (syntactic complexity) | 0.75 |
 
 Use the defaults first. Other values change the output; the effect of each token is in
-[docs/FINDINGS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/FINDINGS.md). At inference the value is written as given (`C_0.95`, not `C_0.950`).
+[docs/FINDINGS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/FINDINGS.md). Write every value with two decimals, as in training (`C_0.80`, not `C_0.8`: the model reads them differently), give all
+tokens, and keep their order.
 
 ## How to use
 
@@ -81,7 +82,7 @@ with torch.no_grad():
         max_length=256,
         num_return_sequences=1,
     )
-print(tokenizer.decode(out[0], skip_special_tokens=True))
+print(tokenizer.decode(out[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
 ```
 
 Replace the sentence after the control tokens with your own. The repo's CLI builds the input for you:
@@ -101,13 +102,13 @@ default tokens, decoding as above.
 | TurkCorpus test | 43.50 | 67.26 | 6.17 |
 | ASSET test | 45.05 | 72.24 | 6.33 |
 
-These are the numbers in the GitHub README. The tables in the paper are lower; the gap and what we could and could not
-trace is in [docs/RESULTS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/RESULTS.md).
+These are the numbers in the GitHub README. The tables in the paper are lower because they score an earlier decoding
+pass of the same runs. Details are in [docs/RESULTS.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/RESULTS.md).
 
 ## Human evaluation
 
 The paper's human evaluation (Table 3) rated the 5-token model, not this one. A separate batch of 20 HITs rated this
-4-token model; it is not in the paper. Ratings and protocol: [docs/HUMAN_EVALUATION.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/HUMAN_EVALUATION.md).
+4-token model at its default tokens; it is not in the paper. Ratings and protocol: [docs/HUMAN_EVALUATION.md](https://github.com/KimChengSHEANG/TS_T5/blob/main/docs/HUMAN_EVALUATION.md).
 
 ## Training hyperparameters
 

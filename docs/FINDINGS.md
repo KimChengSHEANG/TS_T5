@@ -73,7 +73,8 @@ How the defaults were chosen: **cannot be confirmed.** We found no log of a sear
 select `C 0.95, L 0.75, WR 0.75, DTD 0.75`. The ablation file shows a coarse manual grid (0.5, 0.75, 0.85, 1.0 for
 L, WR, DTD together with C fixed at 0.95; and single-token sweeps from 0.25 to 1.15 in `docs/ABLATIONS.md`).
 It is consistent with a hand-picked setting, but nothing in D8 says so. The paper text (Table 6) refers to
-searched tokens per test set; we did not find the matching logs.
+searched tokens per test set; we did not find the matching logs. All ten single-token values of the paper (reading L on
+ASSET as 1.05, whose scores the paper prints) are the best **test** SARI of their sweep in `docs/ABLATIONS.md`.
 
 The new `ts-t5 search` (`src/ts_t5/search.py`) scores validation outputs against validation references, which is the
 evident intent. Its values are not comparable with the 2021 study.
@@ -100,8 +101,27 @@ evident intent. Its values are not comparable with the 2021 study.
     ASSET 45.27 / 72.20 / 5.91 vs 45.26 / 72.19 / 5.92 (`docs/REPRODUCE.md`, gate table).
   - The original score logs print the same five tokens
     (`exp_1601582154282931_best/outputs.6/score_267a...turkcorpus_test_log.txt`).
-- The training target value (0.8 for every token, as in the other runs) is not recorded for this run. The release
-  config uses 0.8 on the assumption that it matches. We could not check that.
+- The target value (0.8 for every token, as in the other runs) is not recorded for this run. It does not affect the
+  training inputs, which carry each pair's measured ratios. It is used only to generate during validation and to name
+  the preprocessing cache. The release config uses 0.8.
+
+### 5. Inference wrote ratios in a format training never used (fixed 2026-11-22)
+
+- `encode_sentence_pair` writes two decimals (`C_0.80`). `encode_sentence` wrote the Python float (`C_0.8`).
+  T5 tokenises the two differently.
+- On the released 4-token model the median output length for a requested 0.80 was 0.882 with `C_0.8` and 0.818 with
+  `C_0.80`. Table in the README, section "Number format experiment".
+- `encode_sentence` now writes two decimals. The default values (0.75, 0.95, 1.05) encode as before, so the released
+  scores do not change.
+- Archived results at values ending in zero (the sweeps, the Optuna trials, the figures at C 0.5 and 1.0) were made
+  with the old format. Commit `ce9ae79` is the last one that reproduces that format.
+
+### 6. The copy filter never fired (removed 2026-11-22)
+
+- `Simplifier.simplify` was meant to return an empty string for a copy of the input. It compared the output with the
+  input including its control tokens, so it never matched.
+- The filter is removed and copies are returned, which is what always happened. A working filter would have put empty
+  lines into output files and changed the published scores.
 
 ## What each token does
 
@@ -220,11 +240,12 @@ Median output length is 0.93-0.95 of the input length in characters.
 ## What we could not test
 
 - **Run-to-run noise.** Every row has one training run with seed 12 (`params.json`) and one decode. We did not
-  measure the spread between seeds or between decodes. Differences of a few tenths of SARI are not claims.
+  measure the spread between seeds. Archived decodes of the same runs differ by up to 0.34 SARI from the released ones
+  (`docs/RESULTS.md`). Differences of a few tenths of SARI are not claims.
 - **Retraining on the new stack.** The full training was not re-run on the new stack. The smoke train (about 32 s on
   MPS, `configs/smoke.json`) only checks that the code runs.
 - **How the default tokens were chosen** (finding 2).
-- **Why the paper numbers are lower than the README** (`docs/RESULTS.md`), and why the original 2021 score logs of
-  the released models (43.16 and 43.00 SARI on TurkCorpus) are below the re-scored README numbers (43.50 and 43.34).
+- **Which decoding setting changed between the paper's pass and the released one.** The gap itself is traced to the
+  decoding pass (`docs/RESULTS.md`).
 - **Which model produced the D8 plot data.** The figure data are validation outputs of 2021 models we cannot name.
 - **Human evaluation.** This document covers automatic scores only. It does not report human ratings.

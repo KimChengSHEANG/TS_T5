@@ -1,6 +1,6 @@
 # Human evaluation
 
-Crowd ratings of simplifications from four systems (YATS, DMASS-DCSS, MUSS, TS-T5), collected on Amazon Mechanical Turk. The ratings are published anonymised in `human_evaluation/`.
+Crowd ratings of simplifications from four systems (YATS, DMASS-DCSS, MUSS, TS-T5), collected on Amazon Mechanical Turk. The ratings are published pseudonymised in `human_evaluation/`.
 
 ## Protocol
 
@@ -19,8 +19,8 @@ Source: the evaluation notes and the HIT designs in `human_evaluation/HIT_design
 
 | Path | Content |
 | --- | --- |
-| `human_evaluation/mturk_batches/5tokens_batch_v{1,2,3}.csv` | Raw ratings, 3 batches (2 + 5 + 13 HITs), anonymised |
-| `human_evaluation/mturk_batches/4tokens_batch_4442003.csv` | Raw ratings, one batch of 20 HITs, anonymised |
+| `human_evaluation/mturk_batches/5tokens_batch_v{1,2,3}.csv` | Raw ratings, 3 batches (2 + 5 + 13 HITs), pseudonymised |
+| `human_evaluation/mturk_batches/4tokens_batch_4442003.csv` | Raw ratings, one batch of 20 HITs, pseudonymised |
 | `human_evaluation/extracted_ratings/{4tokens,5tokens}/<system>.csv` | Per-system table: sentence, 5 ratings per aspect and their average (from the authors' xlsx) |
 | `human_evaluation/extracted_ratings/*/complex.txt` | The 100 source sentences |
 | `human_evaluation/HIT_designs/` | HIT HTML (requester name and email removed) |
@@ -31,7 +31,7 @@ Column meaning in `mturk_batches/`: `HITId`, `AssignmentId`, `WorkerId` are salt
 
 Mean rating over 500 ratings (100 sentences x 5 raters). Command: `python scripts/anonymise_human_eval.py scores`.
 
-From `human_evaluation/mturk_batches/5tokens_batch_v*.csv` (TS-T5 here is the 5-token model; this is the paper's Table 3):
+From `human_evaluation/mturk_batches/5tokens_batch_v*.csv` (TS-T5 here is the 5-token model at `W 1.05, C 0.95, L 0.85, WR 0.85, DTD 0.85`, not at its default tokens; this is the paper's Table 3):
 
 | System | Fluency | Simplicity | Adequacy |
 | --- | --- | --- | --- |
@@ -40,7 +40,7 @@ From `human_evaluation/mturk_batches/5tokens_batch_v*.csv` (TS-T5 here is the 5-
 | MUSS | 4.410 | 4.022 | 4.130 |
 | TS-T5 | 4.308 | 3.990 | 4.180 |
 
-From `human_evaluation/mturk_batches/4tokens_batch_4442003.csv` (not in the paper; TS-T5 here is the 4-token model):
+From `human_evaluation/mturk_batches/4tokens_batch_4442003.csv` (not in the paper; TS-T5 here is the 4-token model at its default tokens):
 
 | System | Fluency | Simplicity | Adequacy |
 | --- | --- | --- | --- |
@@ -55,7 +55,8 @@ Comparison with the authors' summary table (`results/5tokens/final data/readme.m
 
 Caveats:
 
-- The paper (Table 3) reports "Our Model" as "T5-base+All Tokens", the 5-token model, and its numbers match the `5tokens` batches (the paper shows 4.30 where this doc shows 4.308, a truncation). The `4tokens` batch is an extra run that is not in the paper. The tables below label TS-T5 accordingly. Which model each batch rated is inferred from the folder names.
+- The paper (Table 3) reports "Our Model" as "T5-base+All Tokens", the 5-token model, and its numbers match the `5tokens` batches (the paper shows 4.30 where this doc shows 4.308, a truncation). The `4tokens` batch is an extra run that is not in the paper. The tables above label TS-T5 accordingly.
+- What each batch rated was checked sentence by sentence. All 100 TS-T5 sentences of the `5tokens` batches equal the archived output `exp_1601582154282931_best/outputs.3/dbd23931...` (WR/L/DTD 0.85; 43.04 / 75.11 / 6.54 on TurkCorpus), and only 14 equal the released default-token output. All 100 of the `4tokens` batch equal the released 4-token default-token output. Check: `python scripts/readme_analysis.py`.
 - The paper names the MUSS row "BART+ACCESS" (Martin et al. 2020a). Same system.
 - The D8 evaluation notes contain no numeric table (it is an image); the comparison with the paper uses its Table 3.
 - The 4-token extracted CSVs carry mojibake from the source xlsx (for example `H√§rtel`). It is kept as found.

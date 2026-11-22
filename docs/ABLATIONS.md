@@ -3,7 +3,9 @@
 Control-token ablations from the 2020-21 experiments. All numbers come from one file:
 `/Volumes/D8/workspace/TS_T5/results/for_ablations.txt` (D8 backup, read-only; not in this repo).
 Each score was made by the original pipeline (easse of that time), on the **test** sets (`turkcorpus_test`, `asset_test`).
-We did not re-score them. They are not directly comparable with the re-scored README table in `docs/RESULTS.md`.
+Most rows were not re-scored. The headline rows and the rows that contradict the paper were, and the pinned easse gives
+the same values to within 0.01. They are other decoding passes than the README table in `docs/RESULTS.md`.
+Values ending in zero were fed as `0.8` or `1.0`, a format absent from training (`docs/FINDINGS.md`, finding 5).
 
 ## Method: from output-file hash back to token values
 

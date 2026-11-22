@@ -16,7 +16,7 @@ Model, tokens, epochs, `max_seq_length` and batch come from `params.json`.
 ## Reading the columns
 
 - **Tokens.** From `features_kwargs` in `params.json`. All training runs set every token to target 0.8 (`features_kwargs`
-  is the training-time target, not the inference value). "not recorded" means `params.json` has no `features_kwargs`.
+  is only used to generate during validation and to name the cache. Training inputs always carry the measured ratios). "not recorded" means `params.json` has no `features_kwargs`.
   For `exp_1601582154282931_best` (the 5-token Drive model) the token set is inferred from reproducing scores
   (`docs/FINDINGS.md`, finding 4).
 - **Batch x accum.** `train_batch_size` times `gradient_accumulation_steps`.
@@ -129,13 +129,11 @@ ASSET 45.10 / 73.13 / 6.18, `outputs` gives 44.75 / 72.71 / 6.18).
 Two things to note:
 
 - The 5-token paper numbers (43.00 / 64.42 / 5.63 and 45.04 / 71.21 / 5.88) are the `outputs.6` row. They use the
-  0.75 default, not 0.85. The paper's 4-token numbers (43.31 / 66.23 / 6.17, 44.91 / 71.96 / 6.32) are in
-  `for_ablations.txt` (`docs/ABLATIONS.md`) and not in the `outputs.4` score logs above (43.16 / 65.87).
-  We did not find the log for the paper row.
-- Confirmed conflict: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row, but the Table 5 numbers (43.00/64.42/5.63) match the 0.75 row of `for_ablations.txt` (the 0.85 row reads 42.98/75.15/6.58). We do not know which of the two the paper intended.
-- The original-pipeline scores for the released models (43.16 and 43.00 SARI on TurkCorpus) are below the README
-  (43.50 and 43.34), which we reproduce with the pinned easse (`docs/REPRODUCE.md`). We did not find whether the cause is the easse
-  version, the decoding settings, or different output files.
+  0.75 default, not 0.85. The paper's 4-token numbers (43.31 / 66.23 / 6.17, 44.91 / 71.96 / 6.32) come from that run's
+  `outputs.2`, which has no score log. Its files re-score to exactly those values.
+- Resolved: paper Table 6 lists WR/L/DTD 0.85 for the 5-token TurkCorpus row. The Table 2 and 5 scores (43.00/64.42/5.63) use 0.75. The human evaluation (Table 3) rated outputs made at 0.85 (43.04/75.11/6.54): all 100 rated sentences equal `exp_1601582154282931_best/outputs.3/dbd23931...`. So the paper reports two settings of one model.
+- The original-pipeline scores for the released models are below the README because they are other decoding passes.
+  Re-scored with the pinned easse, those files give their logged values exactly (`docs/RESULTS.md`).
 
 ## Hyperparameter and token searches (Optuna)
 
